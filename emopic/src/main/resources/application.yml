@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/new_schema?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: ${MYSQL_URL}
     username: root
-    password: kor159753!
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -21,3 +21,10 @@ logging:
   level:
     sql: debug
     org.hibernate.type: trace
+
+gcp:
+  project:
+    id: ${PROJECT_ID}
+    bucket:
+      name: ${BUCKET_NAME}
+      key-path: ${KEY_PATH}
