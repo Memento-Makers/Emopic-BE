@@ -23,7 +23,7 @@ public class PhotoService {
         Photo savedPhoto = photoRepository.save(photo);
         String signedUrl;
         try {
-            signedUrl = signedURLGenerator.generateV4GetObjectSignedUrl(savedPhoto.getName());
+            signedUrl = signedURLGenerator.generateV4PutObjectSignedUrl(savedPhoto.getName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

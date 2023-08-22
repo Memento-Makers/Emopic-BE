@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -32,6 +34,31 @@ public class SignedURLGenerator {
         BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(buckedName,objectName)).build();
 
         URL url = storage.signUrl(blobInfo,15, TimeUnit.MINUTES,Storage.SignUrlOption.withV4Signature(),
+                Storage.SignUrlOption.signWith(ServiceAccountCredentials.fromStream(new FileInputStream(keyPath))));
+        return url.toString();
+    }
+
+    public String generateV4PutObjectSignedUrl(String objectName) throws StorageException, IOException {
+        Storage storage = StorageOptions.newBuilder()
+                .setProjectId(projectId)
+                .build()
+                .getService();
+        System.out.println(projectId);
+        System.out.println(buckedName);
+        System.out.println(keyPath);
+        BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(buckedName,objectName)).build();
+
+        Map<String, String> extensionHeaders = new HashMap<>();
+        extensionHeaders.put("Content-Type", "image/jpeg");
+
+        URL url = storage.signUrl(
+                blobInfo,
+                15,
+                TimeUnit.MINUTES,
+                Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
+                Storage.SignUrlOption.withExtHeaders(extensionHeaders),
+                Storage.SignUrlOption.withV4Signature(),
+
                 Storage.SignUrlOption.signWith(ServiceAccountCredentials.fromStream(new FileInputStream(keyPath))));
         return url.toString();
     }
