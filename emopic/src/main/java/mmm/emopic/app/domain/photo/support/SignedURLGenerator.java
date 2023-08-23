@@ -28,9 +28,6 @@ public class SignedURLGenerator {
                 .setProjectId(projectId)
                 .build()
                 .getService();
-        System.out.println(projectId);
-        System.out.println(buckedName);
-        System.out.println(keyPath);
         BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(buckedName,objectName)).build();
 
         URL url = storage.signUrl(blobInfo,15, TimeUnit.MINUTES,Storage.SignUrlOption.withV4Signature(),
@@ -43,9 +40,6 @@ public class SignedURLGenerator {
                 .setProjectId(projectId)
                 .build()
                 .getService();
-        System.out.println(projectId);
-        System.out.println(buckedName);
-        System.out.println(keyPath);
         BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(buckedName,objectName)).build();
 
         Map<String, String> extensionHeaders = new HashMap<>();
