@@ -1,6 +1,7 @@
 package mmm.emopic.app.domain.photo;
 
 import lombok.RequiredArgsConstructor;
+import mmm.emopic.app.base.BaseEntity;
 import mmm.emopic.app.base.Dto.BaseResponse;
 import mmm.emopic.app.domain.photo.dto.PhotoUploadRequest;
 import mmm.emopic.app.domain.photo.dto.PhotoUploadResponse;
@@ -20,7 +21,7 @@ public class PhotoController {
 
     //이미지 업로드
     @PostMapping("/photos")
-    public ResponseEntity createPhoto(@Validated @RequestBody PhotoUploadRequest photoUploadRequest){
+    public ResponseEntity<BaseResponse> createPhoto(@Validated @RequestBody PhotoUploadRequest photoUploadRequest){
         PhotoUploadResponse response = photoService.createPhoto(photoUploadRequest);
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "이미지 업로드 signed_url 생성 성공",response));
     }
