@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: ${MYSQL_URL}
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      #      show_sql: true
+      format_sql: true
+
+  cloud:
+    gcp:
+      credentials:
+        location: classpath:key.json
+logging:
+  level:
+    sql: debug
+    org.hibernate.type: trace
+
+gcp:
+  project:
+    id: ${PROJECT_ID}
+    bucket:
+      name: ${BUCKET_NAME}
+      key-path: ${KEY_PATH}
