@@ -18,6 +18,9 @@ spring:
       credentials:
         location: classpath:key.json
 logging:
+  pattern:
+    path:
+    console: "%-5level %d{yyyy-MM-dd HH:mm:ss}[%thread] %logger[%method:%line] - %msg%n"
   level:
     sql: debug
     org.hibernate.type: trace
@@ -28,3 +31,11 @@ gcp:
     bucket:
       name: ${BUCKET_NAME}
       key-path: ${KEY_PATH}
+
+jwt:
+  token:
+    secret-key: ${JWT_SECRET_KEY}
+    access:
+      expire-time: ${JWT_ACCESS_TOKEN_EXPIRE_TIME}
+    refresh:
+      expire-time: ${JWT_REFRESH_TOKEN_EXPIRE_TIME}
