@@ -1,4 +1,4 @@
-package mmm.emopic.app.exception.auth;
+package mmm.emopic.app.exception.base;
 
 public class UnAuthorizedException extends RuntimeException {
     private String errorCode = "UNAUTHORIZED";

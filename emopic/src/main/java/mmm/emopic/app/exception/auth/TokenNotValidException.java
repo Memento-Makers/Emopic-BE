@@ -1,5 +1,7 @@
 package mmm.emopic.app.exception.auth;
 
+import mmm.emopic.app.exception.base.UnAuthorizedException;
+
 public class TokenNotValidException extends UnAuthorizedException {
 
     private static final String SERVER_MESSAGE = "유효하지 않은 토큰입니다.";
