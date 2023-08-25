@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
+// 익명 사용자인 경우에 null 로 설정.
+// 인증된 사용자의 경우 member 로 설정해라!
 @AuthenticationPrincipal(expression = "#this == 'anonymousUser' ? null : member")
 public @interface CurrentUser {
 }
