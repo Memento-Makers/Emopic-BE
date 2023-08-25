@@ -5,7 +5,9 @@ import io.jsonwebtoken.security.Keys;
 import mmm.emopic.app.exception.auth.TokenNotValidException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
@@ -17,6 +19,7 @@ public class JwtTokenProvider {
     private final long accessTokenExpireTime; // 엑세스 토큰 만료시간
     private final long refreshTokenExpireTime; // 리프레시 토큰 만료시간
 
+    public static final String AUTHORIZATION_HEADER = "Authorization";
     public JwtTokenProvider(@Value("${jwt.token.secret-key}") String secretKey,
                             @Value("${jwt.token.access.expire-time}") long accessTokenValidityInSeconds,
                             @Value("${jwt.token.refresh.expire-time}") long refreshTokenValidityInSeconds ) {
@@ -74,5 +77,18 @@ public class JwtTokenProvider {
         } catch (IllegalArgumentException e) {
             throw new TokenNotValidException("JWT 토큰이 잘못되었습니다.");
         }
+    }
+
+    // Jwt Token에서 User PK 추출
+    public String getUserPk(String token) {
+        return getPayload(token);
+    }
+
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }
