@@ -22,6 +22,11 @@ public class Member extends BaseEntity {
 
     private String password;
 
+    private String name;
+
+    @Lob
+    private String profileImgUrl;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -29,9 +34,11 @@ public class Member extends BaseEntity {
     private Provider provider;
 
     @Builder
-    public Member(String userId, String password, Role role, Provider provider) {
+    public Member(String userId, String password, String name, String profileImgUrl, Role role, Provider provider) {
         this.userId = userId;
         this.password = password;
+        this.name = name;
+        this.profileImgUrl = profileImgUrl;
         this.role = role;
         this.provider = provider;
     }
