@@ -1,4 +1,4 @@
-package mmm.emopic.app.domain.photo.dto;
+package mmm.emopic.app.domain.photo.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
