@@ -2,9 +2,11 @@ package mmm.emopic.app.domain.photo;
 
 
 import lombok.RequiredArgsConstructor;
-import mmm.emopic.app.domain.photo.dto.PhotoUploadRequest;
-import mmm.emopic.app.domain.photo.dto.PhotoUploadResponse;
+import mmm.emopic.app.domain.photo.dto.response.PhotoCaptionResponse;
+import mmm.emopic.app.domain.photo.dto.request.PhotoUploadRequest;
+import mmm.emopic.app.domain.photo.dto.response.PhotoUploadResponse;
 import mmm.emopic.app.domain.photo.support.SignedURLGenerator;
+import mmm.emopic.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,5 +30,12 @@ public class PhotoService {
             throw new RuntimeException(e);
         }
         return new PhotoUploadResponse(savedPhoto.getId(),signedUrl);
+    }
+
+    @Transactional
+    public PhotoCaptionResponse getPhotoCaption(Long photoId){
+        Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
+        return new PhotoCaptionResponse(photo.getCaption());
+
     }
 }
