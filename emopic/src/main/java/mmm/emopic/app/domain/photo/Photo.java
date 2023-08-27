@@ -30,6 +30,8 @@ public class Photo extends BaseEntity {
 
     private Boolean location_YM = false; // 기본적으로는 위치정보 없는 상태
 
+    private String signedUrl;
+
     @Builder
     public Photo(String name, LocalDateTime snapped_at, String caption, Boolean location_YM) {
         this.name = name;
