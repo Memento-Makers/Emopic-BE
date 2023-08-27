@@ -5,10 +5,10 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class EmotionUploadResponse {
+public class EmotionRelatedPhotoResponse {
     private final List<Long> photoEmotionIds;
 
-    public EmotionUploadResponse(List<Long> photoEmotionIds) {
+    public EmotionRelatedPhotoResponse(List<Long> photoEmotionIds) {
         this.photoEmotionIds = photoEmotionIds;
     }
 }
