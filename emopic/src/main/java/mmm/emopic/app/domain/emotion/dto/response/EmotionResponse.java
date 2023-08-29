@@ -5,11 +5,11 @@ import mmm.emopic.app.domain.emotion.Emotion;
 
 @Getter
 public class EmotionResponse {
-    private Long id;
+    private Long emotionId;
     private String name;
 
     public EmotionResponse(Emotion emotion){
-        this.id = emotion.getId();
+        this.emotionId = emotion.getId();
         this.name = emotion.getName();
     }
 }

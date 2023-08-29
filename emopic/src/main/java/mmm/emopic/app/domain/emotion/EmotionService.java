@@ -3,9 +3,11 @@ package mmm.emopic.app.domain.emotion;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.domain.emotion.dto.request.EmotionUploadRequest;
 import mmm.emopic.app.domain.emotion.dto.response.EmotionResponse;
-import mmm.emopic.app.domain.emotion.dto.response.EmotionUploadResponse;
+import mmm.emopic.app.domain.emotion.dto.response.EmotionRelatedPhotoResponse;
+import mmm.emopic.app.domain.emotion.repository.EmotionRepository;
+import mmm.emopic.app.domain.emotion.repository.PhotoEmotionRepository;
 import mmm.emopic.app.domain.photo.Photo;
-import mmm.emopic.app.domain.photo.PhotoRepository;
+import mmm.emopic.app.domain.photo.repository.PhotoRepository;
 import mmm.emopic.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +30,7 @@ public class EmotionService {
     }
 
     @Transactional
-    public EmotionUploadResponse saveEmotionsInPhoto(EmotionUploadRequest emotionUploadRequest, Long photoId){
+    public EmotionRelatedPhotoResponse saveEmotionsInPhoto(EmotionUploadRequest emotionUploadRequest, Long photoId){
         List<Long> emotionIdList = new ArrayList<>();
         emotionIdList.add(emotionUploadRequest.getEmotionId());
         emotionIdList.addAll(emotionUploadRequest.getChildEmotions());
@@ -43,6 +45,6 @@ public class EmotionService {
             photoEmotionIds.add(photoEmotion.getId());
         }
 
-        return new EmotionUploadResponse(photoEmotionIds);
+        return new EmotionRelatedPhotoResponse(photoEmotionIds);
     }
 }
