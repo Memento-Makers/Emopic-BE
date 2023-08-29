@@ -9,6 +9,8 @@ import mmm.emopic.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -20,8 +22,18 @@ public class DiaryService {
     @Transactional
     public DiaryResponse saveDiary(String content, Long photoId){
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
-        Diary diary = Diary.builder().photo(photo).content(content).build();
-        Diary saveDiary = diaryRepository.save(diary);
+        Optional<Diary> optionalDiary = diaryRepository.findByPhotoId(photoId);
+        Diary diary;
+        Diary saveDiary;
+        if(optionalDiary.isEmpty()){
+            diary = Diary.builder().photo(photo).content(content).build();
+            saveDiary = diaryRepository.save(diary);
+        }
+        else{
+            saveDiary = optionalDiary.get();
+            saveDiary.setContent(content);
+        }
+
         return new DiaryResponse(saveDiary);
     }
 
