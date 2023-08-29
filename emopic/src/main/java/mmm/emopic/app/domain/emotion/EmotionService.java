@@ -2,6 +2,7 @@ package mmm.emopic.app.domain.emotion;
 
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.domain.emotion.dto.request.EmotionUploadRequest;
+import mmm.emopic.app.domain.emotion.dto.response.EmotionMainSubResponse;
 import mmm.emopic.app.domain.emotion.dto.response.EmotionResponse;
 import mmm.emopic.app.domain.emotion.dto.response.EmotionRelatedPhotoResponse;
 import mmm.emopic.app.domain.emotion.repository.EmotionRepository;
@@ -24,8 +25,9 @@ public class EmotionService {
     private final PhotoRepository photoRepository;
     private final PhotoEmotionRepository photoEmotionRepository;
 
-    public List<EmotionResponse> findEmotions(){
-        return emotionRepository.findAll().stream().map(EmotionResponse::new).collect(Collectors.toList());
+    public EmotionMainSubResponse findEmotions(){
+        List<EmotionResponse> eRList = emotionRepository.findAll().stream().map(EmotionResponse::new).collect(Collectors.toList());
+        return new EmotionMainSubResponse(eRList);
 
     }
 

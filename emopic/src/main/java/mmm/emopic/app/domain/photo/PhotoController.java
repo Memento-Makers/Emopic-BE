@@ -1,5 +1,6 @@
 package mmm.emopic.app.domain.photo;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.base.BaseEntity;
 import mmm.emopic.app.base.Dto.BaseResponse;
@@ -17,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URISyntaxException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1") //
@@ -31,7 +34,7 @@ public class PhotoController {
     }
 
     @PostMapping("/photos/caption")
-    public ResponseEntity<BaseResponse> getPhotoCaption(@Validated @RequestBody PhotoCaptionRequest photoCaptionRequest){
+    public ResponseEntity<BaseResponse> getPhotoCaption(@Validated @RequestBody PhotoCaptionRequest photoCaptionRequest) throws URISyntaxException, JsonProcessingException {
         PhotoCaptionResponse response = photoService.getPhotoCaption(photoCaptionRequest.getPhotoId());
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "캡셔닝 생성 완료", response));
     }

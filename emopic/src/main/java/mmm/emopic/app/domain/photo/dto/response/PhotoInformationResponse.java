@@ -6,6 +6,7 @@ import mmm.emopic.app.domain.category.PhotoCategory;
 import mmm.emopic.app.domain.diary.Diary;
 import mmm.emopic.app.domain.emotion.Emotion;
 import mmm.emopic.app.domain.emotion.PhotoEmotion;
+import mmm.emopic.app.domain.emotion.dto.response.EmotionMainSubResponse;
 import mmm.emopic.app.domain.emotion.dto.response.EmotionResponse;
 import mmm.emopic.app.domain.photo.Photo;
 
@@ -26,7 +27,7 @@ public class PhotoInformationResponse {
 
     private List<String> categories;
 
-    private List<EmotionResponse> emotions;
+    private EmotionMainSubResponse emotions;
 
     public PhotoInformationResponse(Photo photo, Diary diary, List<Category> categoryList, List<Emotion> emotionList){
         this.photoId = photo.getId();
@@ -34,7 +35,9 @@ public class PhotoInformationResponse {
         this.diaryId = diary.getId();
         this.diaryContent = diary.getContent();
         this.categories = categoryList.stream().map(Category::getName).collect(Collectors.toList());
-        this.emotions = emotionList.stream().map(EmotionResponse::new).collect(Collectors.toList());
+        List<EmotionResponse> eRList = emotionList.stream().map(EmotionResponse::new).collect(Collectors.toList());
+        this.emotions = new EmotionMainSubResponse(eRList);
+
 
     }
 }

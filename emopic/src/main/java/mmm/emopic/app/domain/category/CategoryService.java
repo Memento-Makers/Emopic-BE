@@ -1,5 +1,6 @@
 package mmm.emopic.app.domain.category;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.domain.category.dto.response.CategoryDetailResponse;
@@ -12,7 +13,9 @@ import mmm.emopic.app.domain.photo.repository.PhotoRepository;
 import mmm.emopic.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import mmm.emopic.app.domain.photo.support.PhotoInferenceWithAI;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +29,7 @@ public class CategoryService {
     private final CategoryRepositoryCustom categoryRepositoryCustom;
     private final PhotoRepository photoRepository;
     private final PhotoCategoryRepository photoCategoryRepository;
+    private final PhotoInferenceWithAI photoInferenceWithAI;
     @Transactional
     public Category createCategory(String name){
         Category category = Category.builder().name(name).build();
@@ -42,20 +46,12 @@ public class CategoryService {
         }
     }
     @Transactional
-    public CategoryResponse requestCategories(Long photoId){
-        /**
-         * getClassificationsByPhoto()함수
-         * photoId에 해당하는 photo의 classification 결과를 AI inference 서버에 받아오기
-         * List<String> 형태로 받아옴
-         *
-         */
-        // 임시 리스트
-        List<String> result = new ArrayList<>();
-        //result.add("고양이");
-        //result.add("탁자");
-        //result.add("계산기");
-        //
+    public CategoryResponse requestCategories(Long photoId) throws URISyntaxException, JsonProcessingException {
+
+
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
+        List<String> result = photoInferenceWithAI.getClassificationsByPhoto(photo.getSignedUrl());
+
         for(String categoryName : result){
             Category category = categoryRepository.findByName(categoryName).orElseGet(() -> createCategory(categoryName)
             );
@@ -71,7 +67,6 @@ public class CategoryService {
         CategoryDetailResponse result = new CategoryDetailResponse();
         List<Tuple> list = categoryRepositoryCustom.getMostCategory(size);
         for (Tuple tuple : list) {
-            System.out.println(tuple);
             Long categoryId = tuple.get(photoCategory.category.id);
             Long count = tuple.get(photoCategory.category.id.count());
             Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("category", categoryId));
