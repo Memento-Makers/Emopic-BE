@@ -4,6 +4,7 @@ package mmm.emopic.app.domain.emotion;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.base.Dto.BaseResponse;
 import mmm.emopic.app.domain.emotion.dto.request.EmotionUploadRequest;
+import mmm.emopic.app.domain.emotion.dto.response.EmotionMainSubResponse;
 import mmm.emopic.app.domain.emotion.dto.response.EmotionResponse;
 import mmm.emopic.app.domain.emotion.dto.response.EmotionRelatedPhotoResponse;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class EmotionController {
 
     @GetMapping("/emotions")
     public ResponseEntity<BaseResponse> getEmotions(){
-        List<EmotionResponse> response = emotionService.findEmotions();
+        EmotionMainSubResponse response = emotionService.findEmotions();
         return ResponseEntity.ok(new BaseResponse(HttpStatus.OK.value(), "전체 감정 조회 성공",response));
     }
 
