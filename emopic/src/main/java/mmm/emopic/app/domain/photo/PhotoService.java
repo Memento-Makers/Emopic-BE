@@ -1,6 +1,7 @@
 package mmm.emopic.app.domain.photo;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.domain.category.Category;
 import mmm.emopic.app.domain.category.repository.CategoryRepository;
@@ -19,6 +20,7 @@ import mmm.emopic.app.domain.photo.dto.response.PhotoInformationResponse;
 import mmm.emopic.app.domain.photo.dto.response.PhotoUploadResponse;
 import mmm.emopic.app.domain.photo.repository.PhotoRepository;
 import mmm.emopic.app.domain.photo.repository.PhotoRepositoryCustom;
+import mmm.emopic.app.domain.photo.support.PhotoInferenceWithAI;
 import mmm.emopic.app.domain.photo.support.SignedURLGenerator;
 import mmm.emopic.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,19 +51,24 @@ public class PhotoService {
     public PhotoUploadResponse createPhoto(PhotoUploadRequest photoUploadRequest) {
         Photo photo = photoUploadRequest.toEntity();
         Photo savedPhoto = photoRepository.save(photo);
-        String signedUrl;
+        String upLoadSignedUrl;
+        String downLoadSignedUrl;
         try {
-            signedUrl = signedURLGenerator.generateV4PutObjectSignedUrl(savedPhoto.getName());
+            upLoadSignedUrl = signedURLGenerator.generateV4PutObjectSignedUrl(savedPhoto.getName());
+            downLoadSignedUrl = signedURLGenerator.generateV4GetObjectSignedUrl(savedPhoto.getName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new PhotoUploadResponse(savedPhoto.getId(),signedUrl);
+        photo.setSignedUrl(downLoadSignedUrl);
+        return new PhotoUploadResponse(savedPhoto.getId(),upLoadSignedUrl);
     }
 
     @Transactional
-    public PhotoCaptionResponse getPhotoCaption(Long photoId){
+    public PhotoCaptionResponse getPhotoCaption(Long photoId) throws URISyntaxException, JsonProcessingException {
         // 캡셔닝 내용을 AI inference서버에서 받아와야 사용 가능
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
+        String result = PhotoInferenceWithAI.getCaptionByPhoto(photo.getSignedUrl());
+        photo.setCaption(result);
         return new PhotoCaptionResponse(photo.getCaption());
 
     }
@@ -68,14 +76,14 @@ public class PhotoService {
     @Transactional
     public PhotoInformationResponse getPhotoInformation(Long photoId) {
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
-        Diary diary = diaryRepository.findByPhoto_Id(photoId);
+        Diary diary = diaryRepository.findByPhotoId(photoId);
         List<PhotoCategory> photoCategoryList= photoCategoryRepository.findByPhoto_Id(photoId);
         List<Category> categories = new ArrayList<>();
         for(PhotoCategory photoCategory : photoCategoryList){
             Long cid = photoCategory.getCategory().getId();
             categories.add(categoryRepository.findById(cid).orElseThrow(() -> new ResourceNotFoundException("category",cid )));
         }
-        List<PhotoEmotion> photoEmotionList = photoEmotionRepository.findByPhoto_id(photoId);
+        List<PhotoEmotion> photoEmotionList = photoEmotionRepository.findByPhotoId(photoId);
         List<Emotion> emotions = new ArrayList<>();
         for(PhotoEmotion photoEmotion : photoEmotionList){
             Long eid = photoEmotion.getEmotion().getId();
@@ -89,7 +97,7 @@ public class PhotoService {
         Page<Photo> photoList = photoRepositoryCustom.findByCategoryId(categoryId, pageable);
         List<PhotoInCategoryResponse> results = new ArrayList<>();
         for(Photo photo : photoList){
-            List<PhotoEmotion> photoEmotionList = photoEmotionRepository.findByPhoto_id(photo.getId());
+            List<PhotoEmotion> photoEmotionList = photoEmotionRepository.findByPhotoId(photo.getId());
             List<Emotion> emotions = new ArrayList<>();
             for(PhotoEmotion photoEmotion : photoEmotionList){
                 Long eid = photoEmotion.getEmotion().getId();
