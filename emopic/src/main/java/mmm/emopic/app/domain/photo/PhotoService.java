@@ -78,7 +78,7 @@ public class PhotoService {
     public PhotoInformationResponse getPhotoInformation(Long photoId) {
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
         Diary diary = diaryRepository.findByPhotoId(photoId);
-        List<PhotoCategory> photoCategoryList= photoCategoryRepository.findByPhoto_Id(photoId);
+        List<PhotoCategory> photoCategoryList= photoCategoryRepository.findByPhotoId(photoId);
         List<Category> categories = new ArrayList<>();
         for(PhotoCategory photoCategory : photoCategoryList){
             Long cid = photoCategory.getCategory().getId();
