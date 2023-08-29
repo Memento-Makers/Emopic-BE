@@ -1,9 +1,13 @@
 spring:
+  mvc:
+    converters:
+      preferred-json-mapper: gson
   datasource:
     url: ${MYSQL_URL}
     username: root
-    password:
+    password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
 
   jpa:
     open-in-view: true
@@ -31,6 +35,10 @@ gcp:
     bucket:
       name: ${BUCKET_NAME}
       key-path: ${KEY_PATH}
+      ttl: ${DURATION}
+      
+ai-url: ${INFERENCE_URL}
+
 
 jwt:
   token:
@@ -39,3 +47,4 @@ jwt:
       expire-time: ${JWT_ACCESS_TOKEN_EXPIRE_TIME}
     refresh:
       expire-time: ${JWT_REFRESH_TOKEN_EXPIRE_TIME}
+

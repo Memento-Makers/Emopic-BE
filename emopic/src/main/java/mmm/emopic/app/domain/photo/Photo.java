@@ -1,9 +1,6 @@
 package mmm.emopic.app.domain.photo;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import mmm.emopic.app.base.BaseEntity;
 
 import javax.persistence.*;
@@ -14,6 +11,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Photo extends BaseEntity {
 
@@ -29,6 +27,9 @@ public class Photo extends BaseEntity {
     private String caption;
 
     private Boolean location_YM = false; // 기본적으로는 위치정보 없는 상태
+
+    @Lob
+    private String signedUrl;
 
     @Builder
     public Photo(String name, LocalDateTime snapped_at, String caption, Boolean location_YM) {

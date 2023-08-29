@@ -15,8 +15,10 @@ plugins {
 checkstyle {
 	maxWarnings = 0
 	configFile = file("${rootDir}/src/main/resources/checkstyle/google_checks.xml")
-	toolVersion = "8.39"
+	toolVersion = "10.9.0"
+	sourceSets = [sourceSets.main]
 }
+checkstyleMain.source = fileTree('src/main/java')
 group = 'mmm'
 version = '0.0.1-SNAPSHOT'
 
@@ -43,6 +45,15 @@ ext {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	//gcp storage 의존성 추가
+	implementation 'com.google.cloud:spring-cloud-gcp-starter-storage'
+	// querydsl 추가
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+
+	compile group: 'org.json', name: 'json', version: '20230227'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -55,13 +66,11 @@ dependencies {
 	//DB
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	// querydsl 추가
-	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
-	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 	//test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	//gcp storage 의존성 추가
-	implementation 'com.google.cloud:spring-cloud-gcp-starter-storage'
+
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.2'
+	implementation 'org.springframework.retry:spring-retry:1.2.5.RELEASE'
 }
 
 dependencyManagement {
