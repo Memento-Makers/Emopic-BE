@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -27,15 +28,16 @@ import java.util.Map;
 @Configuration
 public class PhotoInferenceWithAI {
 
-    public static List<String> getClassificationsByPhoto(String signedUrl) throws URISyntaxException, JsonProcessingException {
+    @Value("${ai-url}")
+    private String inferenceUrl;
+    public List<String> getClassificationsByPhoto(String signedUrl) throws URISyntaxException, JsonProcessingException {
         List<String> result= new ArrayList<>();
 
-        String requestUrl = "https://326d-34-142-209-100.ngrok.io/classification";
+        String requestUrl = inferenceUrl+"classification";
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("pic_path", signedUrl);
 
-        System.out.println(parameters);
         HttpHeaders headers = new HttpHeaders();
         headers.add("accept", "text/plain;charset=UTF-8");
         HttpEntity<Map<String, String>> request = new HttpEntity<>(parameters, headers);
@@ -53,14 +55,13 @@ public class PhotoInferenceWithAI {
         return result;
     }
 
-    public static String getCaptionByPhoto(String signedUrl) throws URISyntaxException, JsonProcessingException {
+    public String getCaptionByPhoto(String signedUrl) throws URISyntaxException, JsonProcessingException {
 
-        String requestUrl = "https://326d-34-142-209-100.ngrok.io/captioning";
+        String requestUrl = inferenceUrl + "captioning";;
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("url", signedUrl);
 
-        System.out.println(parameters);
         HttpHeaders headers = new HttpHeaders();
         headers.add("accept", "text/plain;charset=UTF-8");
         HttpEntity<Map<String, String>> request = new HttpEntity<>(parameters, headers);
@@ -74,7 +75,9 @@ public class PhotoInferenceWithAI {
 
         CaptionInferenceResponse captionInferenceResponse = mapper.readValue(response, CaptionInferenceResponse.class);
         String result = captionInferenceResponse.getCaption();
-        System.out.println(result);
         return result;
+    }
+
+    public PhotoInferenceWithAI(){
     }
 }

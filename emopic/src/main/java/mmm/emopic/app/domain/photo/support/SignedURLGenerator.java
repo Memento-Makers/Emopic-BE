@@ -22,18 +22,16 @@ public class SignedURLGenerator {
     private String buckedName;
     @Value("${gcp.project.bucket.key-path}")
     private String keyPath;
-
+    @Value("${gcp.project.bucket.ttl}")
+    private Long duration;
     public String generateV4GetObjectSignedUrl(String objectName) throws StorageException, IOException {
         Storage storage = StorageOptions.newBuilder()
                 .setProjectId(projectId)
                 .build()
                 .getService();
-        System.out.println(projectId);
-        System.out.println(buckedName);
-        System.out.println(keyPath);
         BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(buckedName,objectName)).build();
 
-        URL url = storage.signUrl(blobInfo,15, TimeUnit.MINUTES,Storage.SignUrlOption.withV4Signature(),
+        URL url = storage.signUrl(blobInfo,duration, TimeUnit.MINUTES,Storage.SignUrlOption.withV4Signature(),
                 Storage.SignUrlOption.signWith(ServiceAccountCredentials.fromStream(new FileInputStream(keyPath))));
         return url.toString();
     }
@@ -43,9 +41,6 @@ public class SignedURLGenerator {
                 .setProjectId(projectId)
                 .build()
                 .getService();
-        System.out.println(projectId);
-        System.out.println(buckedName);
-        System.out.println(keyPath);
         BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(buckedName,objectName)).build();
 
         Map<String, String> extensionHeaders = new HashMap<>();
@@ -53,13 +48,13 @@ public class SignedURLGenerator {
 
         URL url = storage.signUrl(
                 blobInfo,
-                15,
+                duration,
                 TimeUnit.MINUTES,
                 Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
                 Storage.SignUrlOption.withExtHeaders(extensionHeaders),
                 Storage.SignUrlOption.withV4Signature(),
-
                 Storage.SignUrlOption.signWith(ServiceAccountCredentials.fromStream(new FileInputStream(keyPath))));
+
         return url.toString();
     }
 }

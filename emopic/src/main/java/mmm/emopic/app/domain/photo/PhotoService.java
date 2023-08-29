@@ -46,6 +46,7 @@ public class PhotoService {
     private final CategoryRepository categoryRepository;
     private final EmotionRepository emotionRepository;
     private final PhotoRepositoryCustom photoRepositoryCustom;
+    private final PhotoInferenceWithAI photoInferenceWithAI;
 
     @Transactional
     public PhotoUploadResponse createPhoto(PhotoUploadRequest photoUploadRequest) {
@@ -67,7 +68,7 @@ public class PhotoService {
     public PhotoCaptionResponse getPhotoCaption(Long photoId) throws URISyntaxException, JsonProcessingException {
         // 캡셔닝 내용을 AI inference서버에서 받아와야 사용 가능
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
-        String result = PhotoInferenceWithAI.getCaptionByPhoto(photo.getSignedUrl());
+        String result = photoInferenceWithAI.getCaptionByPhoto(photo.getSignedUrl());
         photo.setCaption(result);
         return new PhotoCaptionResponse(photo.getCaption());
 

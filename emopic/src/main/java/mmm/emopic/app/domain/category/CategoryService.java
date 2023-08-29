@@ -29,6 +29,7 @@ public class CategoryService {
     private final CategoryRepositoryCustom categoryRepositoryCustom;
     private final PhotoRepository photoRepository;
     private final PhotoCategoryRepository photoCategoryRepository;
+    private final PhotoInferenceWithAI photoInferenceWithAI;
     @Transactional
     public Category createCategory(String name){
         Category category = Category.builder().name(name).build();
@@ -49,7 +50,7 @@ public class CategoryService {
 
 
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
-        List<String> result = PhotoInferenceWithAI.getClassificationsByPhoto(photo.getSignedUrl());
+        List<String> result = photoInferenceWithAI.getClassificationsByPhoto(photo.getSignedUrl());
 
         for(String categoryName : result){
             Category category = categoryRepository.findByName(categoryName).orElseGet(() -> createCategory(categoryName)
@@ -66,7 +67,6 @@ public class CategoryService {
         CategoryDetailResponse result = new CategoryDetailResponse();
         List<Tuple> list = categoryRepositoryCustom.getMostCategory(size);
         for (Tuple tuple : list) {
-            System.out.println(tuple);
             Long categoryId = tuple.get(photoCategory.category.id);
             Long count = tuple.get(photoCategory.category.id.count());
             Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("category", categoryId));

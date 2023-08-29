@@ -32,3 +32,7 @@ gcp:
     bucket:
       name: ${BUCKET_NAME}
       key-path: ${KEY_PATH}
+      ttl: ${DURATION}
+
+
+ai-url: ${INFERENCE_URL}
