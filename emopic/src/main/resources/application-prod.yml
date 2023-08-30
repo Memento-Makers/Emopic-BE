@@ -1,0 +1,48 @@
+spring:
+  datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  mvc:
+    converters:
+      preferred-json-mapper: gson
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: none
+
+  cloud:
+    gcp:
+      credentials:
+        location: classpath:key.json
+logging:
+  pattern:
+    path:
+    console: "%-5level %d{yyyy-MM-dd HH:mm:ss}[%thread] %logger[%method:%line] - %msg%n"
+  level:
+    org.springframework: ERROR
+    org.hibernate.SQL: ERROR
+    mmm.emopic: ERROR
+  file:
+    path: ${LOG_PATH}
+    logback:
+      rollingpolicy:
+        file-name-pattern:
+          ${LOG_PATH}/%d{yyyy-MM-dd}/Log-%d{yyyy-MM-dd}.%i.log
+gcp:
+  project:
+    id: ${PROJECT_ID}
+    bucket:
+      name: ${BUCKET_NAME}
+      key-path: ${KEY_PATH}
+
+ai-url: ${INFERENCE_URL}
+
+jwt:
+  token:
+    secret-key: ${JWT_SECRET_KEY}
+    access:
+      expire-time: ${JWT_ACCESS_TOKEN_EXPIRE_TIME}
+    refresh:
+      expire-time: ${JWT_REFRESH_TOKEN_EXPIRE_TIME}
