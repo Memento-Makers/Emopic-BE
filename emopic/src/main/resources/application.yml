@@ -39,6 +39,8 @@ gcp:
       
 ai-url: ${INFERENCE_URL}
 
+deepl-auth-key: ${DEEPL_AUTH_KEY}
+
 
 jwt:
   token:
