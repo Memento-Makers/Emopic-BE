@@ -1,6 +1,7 @@
 package mmm.emopic.app.domain.photo;
 
 import lombok.*;
+import mmm.emopic.app.auth.member.Member;
 import mmm.emopic.app.base.BaseEntity;
 
 import javax.persistence.*;
@@ -30,6 +31,10 @@ public class Photo extends BaseEntity {
 
     @Lob
     private String signedUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Member member;
 
     @Builder
     public Photo(String name, LocalDateTime snapped_at, String caption, Boolean location_YM) {
