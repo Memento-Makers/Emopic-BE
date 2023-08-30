@@ -10,6 +10,7 @@ import mmm.emopic.app.domain.category.repository.CategoryRepositoryCustom;
 import mmm.emopic.app.domain.category.repository.PhotoCategoryRepository;
 import mmm.emopic.app.domain.photo.Photo;
 import mmm.emopic.app.domain.photo.repository.PhotoRepository;
+import mmm.emopic.app.domain.photo.support.DeeplTranslator;
 import mmm.emopic.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ public class CategoryService {
     private final PhotoRepository photoRepository;
     private final PhotoCategoryRepository photoCategoryRepository;
     private final PhotoInferenceWithAI photoInferenceWithAI;
+    private final DeeplTranslator deeplTranslator;
     @Transactional
     public Category createCategory(String name){
         Category category = Category.builder().name(name).build();
@@ -46,12 +48,16 @@ public class CategoryService {
         }
     }
     @Transactional
-    public CategoryResponse requestCategories(Long photoId) throws URISyntaxException, JsonProcessingException {
+    public CategoryResponse requestCategories(Long photoId) throws Exception {
 
 
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
-        List<String> result = photoInferenceWithAI.getClassificationsByPhoto(photo.getSignedUrl());
 
+        List<String> requiredTranslateResult = photoInferenceWithAI.getClassificationsByPhoto(photo.getSignedUrl());
+        List<String> result = new ArrayList<>();
+        for(String translateText :requiredTranslateResult){
+            result.add(deeplTranslator.translate(translateText));
+        }
         for(String categoryName : result){
             Category category = categoryRepository.findByName(categoryName).orElseGet(() -> createCategory(categoryName)
             );
