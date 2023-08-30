@@ -18,7 +18,6 @@ public class DeeplTranslator {
     public String translate(String requiredTranslateText) throws Exception{
         translator = new Translator(authKey);
         TextResult result = translator.translateText(requiredTranslateText,"EN" , "KO");
-        System.out.println(result.getText());
         return result.getText();
     }
 }
