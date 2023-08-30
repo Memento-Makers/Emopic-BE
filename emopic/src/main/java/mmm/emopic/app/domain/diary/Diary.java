@@ -1,9 +1,6 @@
 package mmm.emopic.app.domain.diary;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import mmm.emopic.app.base.BaseEntity;
 import mmm.emopic.app.domain.emotion.Emotion;
 import mmm.emopic.app.domain.photo.Photo;
@@ -14,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Diary extends BaseEntity {
 

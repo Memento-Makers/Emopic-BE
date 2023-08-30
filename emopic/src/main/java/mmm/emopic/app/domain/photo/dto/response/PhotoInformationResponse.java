@@ -10,8 +10,10 @@ import mmm.emopic.app.domain.emotion.dto.response.EmotionMainSubResponse;
 import mmm.emopic.app.domain.emotion.dto.response.EmotionResponse;
 import mmm.emopic.app.domain.photo.Photo;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -21,6 +23,8 @@ public class PhotoInformationResponse {
 
     private String signedUrl;
 
+    private String uploadDateTime;
+
     private Long diaryId;
 
     private String diaryContent;
@@ -28,6 +32,8 @@ public class PhotoInformationResponse {
     private List<String> categories;
 
     private EmotionMainSubResponse emotions;
+
+
 
     public PhotoInformationResponse(Photo photo, Diary diary, List<Category> categoryList, List<Emotion> emotionList){
         this.photoId = photo.getId();
@@ -37,7 +43,7 @@ public class PhotoInformationResponse {
         this.categories = categoryList.stream().map(Category::getName).collect(Collectors.toList());
         List<EmotionResponse> eRList = emotionList.stream().map(EmotionResponse::new).collect(Collectors.toList());
         this.emotions = new EmotionMainSubResponse(eRList);
-
+        this.uploadDateTime = photo.getCreateDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
     }
 }

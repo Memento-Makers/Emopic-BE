@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -77,7 +78,15 @@ public class PhotoService {
     @Transactional
     public PhotoInformationResponse getPhotoInformation(Long photoId) {
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
-        Diary diary = diaryRepository.findByPhotoId(photoId);
+        Optional<Diary> optionalDiary = diaryRepository.findByPhotoId(photoId);
+        Diary diary;
+        if(optionalDiary.isEmpty()){
+            diary = Diary.builder().photo(photo).build();
+            diary = diaryRepository.save(diary);
+        }
+        else{
+            diary = optionalDiary.get();
+        }
         List<PhotoCategory> photoCategoryList= photoCategoryRepository.findByPhotoId(photoId);
         List<Category> categories = new ArrayList<>();
         for(PhotoCategory photoCategory : photoCategoryList){
