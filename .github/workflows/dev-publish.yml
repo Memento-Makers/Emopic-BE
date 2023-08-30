@@ -61,7 +61,7 @@ jobs:
       - name: server docker build and push
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t ${{ secrets.DOCKER_IMAGE_NAME}} .
+          docker build -t ${{ secrets.DOCKER_IMAGE_NAME}} --platform linux/arm64 .
           docker push ${{ secrets.DOCKER_IMAGE_NAME }}
 
       ## docker 이미지 다운로드 및 docker compose 명령어를 이용해 컨테아너 살행
