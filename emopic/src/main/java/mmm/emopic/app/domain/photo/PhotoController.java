@@ -34,7 +34,7 @@ public class PhotoController {
     }
 
     @PostMapping("/photos/caption")
-    public ResponseEntity<BaseResponse> getPhotoCaption(@Validated @RequestBody PhotoCaptionRequest photoCaptionRequest) throws URISyntaxException, JsonProcessingException {
+    public ResponseEntity<BaseResponse> getPhotoCaption(@Validated @RequestBody PhotoCaptionRequest photoCaptionRequest) throws Exception {
         PhotoCaptionResponse response = photoService.getPhotoCaption(photoCaptionRequest.getPhotoId());
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "캡셔닝 생성 완료", response));
     }

@@ -38,7 +38,10 @@ public class EmotionService {
         emotionIdList.addAll(emotionUploadRequest.getChildEmotions());
 
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
-
+        List<PhotoEmotion> photoEmotionList = photoEmotionRepository.findByPhotoId(photo.getId());
+        if(!photoEmotionList.isEmpty()){
+            photoEmotionRepository.deleteAll(photoEmotionList);
+        }
         List<Long> photoEmotionIds = new ArrayList<>();
         for(Long eid: emotionIdList) {
             Emotion emotion = emotionRepository.findById(eid).orElseThrow(() -> new ResourceNotFoundException("emotion", eid));

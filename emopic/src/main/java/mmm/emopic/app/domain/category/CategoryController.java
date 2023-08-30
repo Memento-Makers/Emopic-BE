@@ -20,7 +20,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
     @PostMapping("/photos/categories")
-    public ResponseEntity<BaseResponse> requestCategories(@Validated @RequestBody CategoryRequest categoryGetAllRequest) throws URISyntaxException, JsonProcessingException {
+    public ResponseEntity<BaseResponse> requestCategories(@Validated @RequestBody CategoryRequest categoryGetAllRequest) throws Exception {
 
         CategoryResponse response = categoryService.requestCategories(categoryGetAllRequest.getPhotoId());
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "분류 결과 조회 완료", response));
