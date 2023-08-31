@@ -43,7 +43,8 @@ public class PhotoInformationResponse {
         this.categories = categoryList.stream().map(Category::getName).collect(Collectors.toList());
         List<EmotionResponse> eRList = emotionList.stream().map(EmotionResponse::new).collect(Collectors.toList());
         this.emotions = new EmotionMainSubResponse(eRList);
-        this.uploadDateTime = photo.getCreateDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        if(photo.getSnapped_at() != null)
+            this.uploadDateTime = photo.getSnapped_at().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
     }
 }
