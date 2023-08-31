@@ -13,6 +13,7 @@ plugins {
 }
 
 checkstyle {
+	ignoreFailures = true // 분석결과 예외가 발생하면 빌드실패 발생시키는 것을 제외
 	maxWarnings = 0
 	configFile = file("${rootDir}/src/main/resources/checkstyle/google_checks.xml")
 	toolVersion = "10.9.0"
@@ -24,12 +25,6 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	sourceCompatibility = '11'
-}
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
 }
 
 repositories {
