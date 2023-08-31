@@ -15,7 +15,7 @@ spring:
   cloud:
     gcp:
       credentials:
-        location: classpath:key.json
+        location: file:${KEY_PATH}
 logging:
   pattern:
     path:
