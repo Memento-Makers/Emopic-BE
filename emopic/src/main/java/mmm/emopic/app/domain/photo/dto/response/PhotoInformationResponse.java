@@ -10,6 +10,7 @@ import mmm.emopic.app.domain.emotion.dto.response.EmotionMainSubResponse;
 import mmm.emopic.app.domain.emotion.dto.response.EmotionResponse;
 import mmm.emopic.app.domain.photo.Photo;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +44,7 @@ public class PhotoInformationResponse {
         this.categories = categoryList.stream().map(Category::getName).collect(Collectors.toList());
         List<EmotionResponse> eRList = emotionList.stream().map(EmotionResponse::new).collect(Collectors.toList());
         this.emotions = new EmotionMainSubResponse(eRList);
-        if(photo.getSnapped_at() != null)
-            this.uploadDateTime = photo.getSnapped_at().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
+        Optional<LocalDateTime> dateTime = Optional.ofNullable(photo.getSnapped_at());
+        dateTime.ifPresent(localDateTime -> this.uploadDateTime = localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 }
