@@ -39,6 +39,8 @@ gcp:
 
 ai-url: ${INFERENCE_URL}
 
+deepl-auth-key: ${DEEPL_AUTH_KEY}
+
 jwt:
   token:
     secret-key: ${JWT_SECRET_KEY}
@@ -46,3 +48,20 @@ jwt:
       expire-time: ${JWT_ACCESS_TOKEN_EXPIRE_TIME}
     refresh:
       expire-time: ${JWT_REFRESH_TOKEN_EXPIRE_TIME}
+
+springdoc:
+  version: '1.6.15'
+  api-docs:
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    groups-order: DESC
+    operationsSorter: method
+    disable-swagger-default-url: true
+  show-actuator: true
+
+swagger:
+  request-url: ${REQUEST_URL}
+  description: ${REQUEST_URL_DESCRIPTION}

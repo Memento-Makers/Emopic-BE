@@ -50,3 +50,19 @@ jwt:
     refresh:
       expire-time: ${JWT_REFRESH_TOKEN_EXPIRE_TIME}
 
+springdoc:
+  version: '1.16.5'
+  api-docs:
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    groups-order: DESC
+    operationsSorter: method
+    disable-swagger-default-url: true
+  show-actuator: true
+
+swagger:
+  request-url: http://localhost:8080
+  description: 로컬 서버
