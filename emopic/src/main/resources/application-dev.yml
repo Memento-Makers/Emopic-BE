@@ -1,46 +1,45 @@
 spring:
+  datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   mvc:
     converters:
       preferred-json-mapper: gson
-  datasource:
-    url: ${MYSQL_URL}
-    username: root
-    password: ${MYSQL_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-
   jpa:
     open-in-view: true
     hibernate:
-      ddl-auto: update
-    properties:
-      #      show_sql: true
-      format_sql: true
+      ddl-auto: none
 
   cloud:
     gcp:
       credentials:
-        location: classpath:key.json
+        location: file:${KEY_PATH}
 logging:
   pattern:
     path:
     console: "%-5level %d{yyyy-MM-dd HH:mm:ss}[%thread] %logger[%method:%line] - %msg%n"
   level:
-    sql: debug
-    org.hibernate.type: trace
-
+    org.springframework: WARN
+    org.hibernate.SQL: WARN
+    mmm.emopic: WARN
+  file:
+    path: ${LOG_PATH}
+    logback:
+      rollingpolicy:
+        file-name-pattern:
+          ${LOG_PATH}/%d{yyyy-MM-dd}/Log-%d{yyyy-MM-dd}.%i.log
 gcp:
   project:
     id: ${PROJECT_ID}
     bucket:
       name: ${BUCKET_NAME}
       key-path: ${KEY_PATH}
-      ttl: ${DURATION}
-      
+
 ai-url: ${INFERENCE_URL}
 
 deepl-auth-key: ${DEEPL_AUTH_KEY}
-
 
 jwt:
   token:
@@ -51,7 +50,7 @@ jwt:
       expire-time: ${JWT_REFRESH_TOKEN_EXPIRE_TIME}
 
 springdoc:
-  version: '1.16.5'
+  version: '1.6.15'
   api-docs:
     groups:
       enabled: true
@@ -64,5 +63,5 @@ springdoc:
   show-actuator: true
 
 swagger:
-  request-url: http://localhost:8080
-  description: 로컬 서버
+  request-url: ${REQUEST_URL}
+  description: ${REQUEST_URL_DESCRIPTION}
