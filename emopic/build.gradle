@@ -69,6 +69,10 @@ dependencies {
 
 	//deepl 번역기 의존성 추가
 	implementation "com.deepl.api:deepl-java:1.3.0"
+
+	//Swagger 문서
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.15'
 }
 
 dependencyManagement {
