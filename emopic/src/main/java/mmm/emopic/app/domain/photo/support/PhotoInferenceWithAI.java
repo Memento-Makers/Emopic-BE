@@ -30,7 +30,7 @@ public class PhotoInferenceWithAI {
 
     @Value("${ai-url}")
     private String inferenceUrl;
-    public List<String> getClassificationsByPhoto(String signedUrl) throws URISyntaxException, JsonProcessingException {
+    public CategoryInferenceResponse getClassificationsByPhoto(String signedUrl) throws URISyntaxException, JsonProcessingException {
         List<String> result= new ArrayList<>();
 
         String requestUrl = inferenceUrl+"classification";
@@ -50,9 +50,8 @@ public class PhotoInferenceWithAI {
         ObjectMapper mapper = new ObjectMapper();
 
         CategoryInferenceResponse categoryInferenceResponse = mapper.readValue(response, CategoryInferenceResponse.class);
-        result = categoryInferenceResponse.getCategories();
 
-        return result;
+        return categoryInferenceResponse;
     }
 
     public String getCaptionByPhoto(String signedUrl) throws URISyntaxException, JsonProcessingException {

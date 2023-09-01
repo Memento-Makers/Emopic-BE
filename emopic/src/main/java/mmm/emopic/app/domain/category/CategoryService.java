@@ -10,6 +10,7 @@ import mmm.emopic.app.domain.category.repository.CategoryRepositoryCustom;
 import mmm.emopic.app.domain.category.repository.PhotoCategoryRepository;
 import mmm.emopic.app.domain.photo.Photo;
 import mmm.emopic.app.domain.photo.repository.PhotoRepository;
+import mmm.emopic.app.domain.photo.support.CategoryInferenceResponse;
 import mmm.emopic.app.domain.photo.support.DeeplTranslator;
 import mmm.emopic.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import mmm.emopic.app.domain.photo.support.PhotoInferenceWithAI;
 
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +56,16 @@ public class CategoryService {
 
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
 
-        List<String> requiredTranslateResult = photoInferenceWithAI.getClassificationsByPhoto(photo.getSignedUrl());
+        CategoryInferenceResponse categoryInferenceResponse = photoInferenceWithAI.getClassificationsByPhoto(photo.getSignedUrl());
+
+        String dateTime = categoryInferenceResponse.getDateTime();
+        if(!dateTime.isEmpty()) {
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
+            LocalDateTime strToLocalDateTime = LocalDateTime.parse(dateTime, format);
+            photo.setSnapped_at(strToLocalDateTime);
+        }
+
+        List<String> requiredTranslateResult = categoryInferenceResponse.getCategories();
         List<String> result = new ArrayList<>();
         for(String translateText :requiredTranslateResult){
             result.add(deeplTranslator.translate(translateText));

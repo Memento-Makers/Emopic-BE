@@ -10,6 +10,8 @@ import java.util.List;
 public class CategoryInferenceResponse {
     private List<String> categories = new ArrayList<>();
 
+    private String dateTime;
+
     public CategoryInferenceResponse(){
 
     }
