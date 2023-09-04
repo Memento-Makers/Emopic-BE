@@ -12,6 +12,7 @@ import mmm.emopic.app.domain.photo.dto.response.PhotoInformationResponse;
 import mmm.emopic.app.domain.photo.dto.response.PhotoUploadResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URISyntaxException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,7 +48,7 @@ public class PhotoController {
     }
 
     @GetMapping("/photos/categories/{categoryId}")
-    public ResponseEntity<BaseResponse> getPhotoInCategory(@PathVariable(name = "categoryId") Long categoryId,@PageableDefault(size = 1) Pageable pageable){
+    public ResponseEntity<BaseResponse> getPhotoInCategory(@PathVariable(name = "categoryId") Long categoryId,@PageableDefault(page = 0, size = 10, sort="snapped_at",direction = Sort.Direction.DESC) Pageable pageable){
         Page<PhotoInCategoryResponse> response = photoService.getPhotoInCategory(categoryId, pageable);
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "분류 결과 세부 조회 완료", response));
     }
