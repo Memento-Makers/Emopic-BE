@@ -5,7 +5,7 @@ spring:
   datasource:
     url: ${MYSQL_URL}
     username: root
-    password: ${MYSQL_PASSWORD}
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 
@@ -66,3 +66,6 @@ springdoc:
 swagger:
   request-url: http://localhost:8080
   description: 로컬 서버
+
+cors:
+  list : ${CORS_LIST}
