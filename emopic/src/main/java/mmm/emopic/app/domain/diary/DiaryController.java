@@ -7,8 +7,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.base.Dto.BaseResponse;
-import mmm.emopic.app.domain.diary.dto.request.DiaryRequest;
-import mmm.emopic.app.domain.diary.dto.response.DiaryResponse;
+import mmm.emopic.app.domain.diary.dto.request.DiarySaveRequest;
+import mmm.emopic.app.domain.diary.dto.response.DiaryGetResponse;
+import mmm.emopic.app.domain.diary.dto.response.DiarySaveResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -26,9 +27,14 @@ public class DiaryController {
     @Operation(summary = "일기장 생성", responses = {
             @ApiResponse(responseCode = "201", description = "일기장 생성 성공", content = @Content(schema = @Schema(implementation = DiaryResponse.class)))
     })
-    public ResponseEntity<BaseResponse> saveDiary(@Validated @RequestBody DiaryRequest diaryRequest, @PathVariable(name ="photoId") Long photoId){
+    public ResponseEntity<BaseResponse> saveDiary(@Validated @RequestBody DiarySaveRequest diarySaveRequest, @PathVariable(name ="photoId") Long photoId){
         DiaryResponse response =  diaryService.saveDiary(diaryRequest.getContent(), photoId);
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "일기장 생성 성공", response));
     }
 
+    @GetMapping("/photos/{photoId}/diaries")
+    public ResponseEntity<BaseResponse> getDiary(@PathVariable(name ="photoId") Long photoId){
+        DiaryGetResponse response = diaryService.getDiary(photoId);
+        return ResponseEntity.ok(new BaseResponse(HttpStatus.OK.value(), "일기장 조회 완료", response));
+    }
 }

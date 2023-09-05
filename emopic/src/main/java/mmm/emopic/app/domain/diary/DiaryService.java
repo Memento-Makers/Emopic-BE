@@ -1,7 +1,8 @@
 package mmm.emopic.app.domain.diary;
 
 import lombok.RequiredArgsConstructor;
-import mmm.emopic.app.domain.diary.dto.response.DiaryResponse;
+import mmm.emopic.app.domain.diary.dto.response.DiaryGetResponse;
+import mmm.emopic.app.domain.diary.dto.response.DiarySaveResponse;
 import mmm.emopic.app.domain.diary.repository.DiaryRepository;
 import mmm.emopic.app.domain.photo.Photo;
 import mmm.emopic.app.domain.photo.repository.PhotoRepository;
@@ -20,7 +21,7 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
 
     @Transactional
-    public DiaryResponse saveDiary(String content, Long photoId){
+    public DiarySaveResponse saveDiary(String content, Long photoId){
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
         Optional<Diary> optionalDiary = diaryRepository.findByPhotoId(photoId);
         Diary diary;
@@ -34,7 +35,12 @@ public class DiaryService {
             saveDiary.setContent(content);
         }
 
-        return new DiaryResponse(saveDiary);
+        return new DiarySaveResponse(saveDiary);
     }
 
+    @Transactional
+    public DiaryGetResponse getDiary(Long photoId) {
+        Diary diary = diaryRepository.findByPhotoId(photoId).orElseThrow(() -> new ResourceNotFoundException("diary", photoId));
+        return new DiaryGetResponse(diary);
+    }
 }
