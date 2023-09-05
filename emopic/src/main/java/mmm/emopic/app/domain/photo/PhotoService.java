@@ -74,6 +74,14 @@ public class PhotoService {
         String result = photoInferenceWithAI.getCaptionByPhoto(photo.getSignedUrl());
         result = deeplTranslator.translate(result);
         photo.setCaption(result);
+        Optional<Diary> optionalDiary = diaryRepository.findByPhotoId(photoId);
+        Diary diary;
+        if(optionalDiary.isEmpty()){
+            diary = Diary.builder().photo(photo).build();
+            diary = diaryRepository.save(diary);
+            diary.setContent(result);
+        }
+
         return new PhotoCaptionResponse(photo.getCaption());
 
     }
