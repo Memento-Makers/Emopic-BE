@@ -50,6 +50,6 @@ public class EmotionService {
             photoEmotionIds.add(photoEmotion.getId());
         }
 
-        return new EmotionRelatedPhotoResponse(photoEmotionIds);
+        return new EmotionRelatedPhotoResponse(emotionIdList);
     }
 }
