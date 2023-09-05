@@ -5,6 +5,7 @@ import mmm.emopic.app.domain.category.Category;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 public class CategoryDetailResponse {
@@ -19,7 +20,13 @@ public class CategoryDetailResponse {
         public CategoryDetail(Category category, Long count){
             this.categoryId = category.getId();
             this.name = category.getName();
-            this.thumbnail = category.getThumbnail();
+            Optional<String> optionThumbnail = Optional.ofNullable(category.getThumbnail());
+            if(optionThumbnail.isPresent()){
+                this.thumbnail = category.getThumbnail();
+            }
+            else{
+                this.thumbnail = "";
+            }
             this.count = count;
         }
 
