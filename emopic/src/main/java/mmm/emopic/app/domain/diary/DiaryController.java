@@ -25,14 +25,17 @@ public class DiaryController {
 
     @PostMapping("/photos/{photoId}/diaries")
     @Operation(summary = "일기장 생성", responses = {
-            @ApiResponse(responseCode = "201", description = "일기장 생성 성공", content = @Content(schema = @Schema(implementation = DiaryResponse.class)))
+            @ApiResponse(responseCode = "201", description = "일기장 생성 성공", content = @Content(schema = @Schema(implementation = DiarySaveResponse.class)))
     })
     public ResponseEntity<BaseResponse> saveDiary(@Validated @RequestBody DiarySaveRequest diarySaveRequest, @PathVariable(name ="photoId") Long photoId){
-        DiaryResponse response =  diaryService.saveDiary(diaryRequest.getContent(), photoId);
+        DiarySaveResponse response =  diaryService.saveDiary(diarySaveRequest.getContent(), photoId);
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "일기장 생성 성공", response));
     }
 
     @GetMapping("/photos/{photoId}/diaries")
+    @Operation(summary = "일기장 조회", responses = {
+            @ApiResponse(responseCode = "200", description = "일기장 조회 성공", content = @Content(schema = @Schema(implementation = DiaryGetResponse.class)))
+    })
     public ResponseEntity<BaseResponse> getDiary(@PathVariable(name ="photoId") Long photoId){
         DiaryGetResponse response = diaryService.getDiary(photoId);
         return ResponseEntity.ok(new BaseResponse(HttpStatus.OK.value(), "일기장 조회 완료", response));
