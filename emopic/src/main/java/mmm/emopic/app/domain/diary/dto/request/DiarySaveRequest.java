@@ -5,7 +5,7 @@ import lombok.Getter;
 import javax.validation.constraints.NotBlank;
 
 @Getter
-public class DiaryRequest {
+public class DiarySaveRequest {
 
     @NotBlank
     private String content;

@@ -4,10 +4,10 @@ import lombok.Getter;
 import mmm.emopic.app.domain.diary.Diary;
 
 @Getter
-public class DiaryResponse {
+public class DiarySaveResponse {
     private Long diaryId;
 
-    public DiaryResponse(Diary diary){
+    public DiarySaveResponse(Diary diary){
         this.diaryId = diary.getId();
     }
 }
