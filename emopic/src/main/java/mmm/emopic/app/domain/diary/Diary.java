@@ -16,7 +16,6 @@ import java.util.List;
 public class Diary extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "diary_id")
     private Long id;
 
     @Lob
