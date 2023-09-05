@@ -65,3 +65,6 @@ springdoc:
 swagger:
   request-url: ${REQUEST_URL}
   description: ${REQUEST_URL_DESCRIPTION}
+
+cors:
+  list : ${CORS_LIST}
