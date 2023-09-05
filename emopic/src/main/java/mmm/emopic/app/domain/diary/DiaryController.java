@@ -2,7 +2,6 @@ package mmm.emopic.app.domain.diary;
 
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.base.Dto.BaseResponse;
-import mmm.emopic.app.domain.diary.dto.request.DiaryGetRequest;
 import mmm.emopic.app.domain.diary.dto.request.DiarySaveRequest;
 import mmm.emopic.app.domain.diary.dto.response.DiaryGetResponse;
 import mmm.emopic.app.domain.diary.dto.response.DiarySaveResponse;
@@ -23,9 +22,9 @@ public class DiaryController {
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "일기장 생성 완료", response));
     }
 
-    @PostMapping("/photos/diaries")
-    public ResponseEntity<BaseResponse> getDiary(@Validated @RequestBody DiaryGetRequest diaryGetRequest){
-        DiaryGetResponse response = diaryService.getDiary(diaryGetRequest.getPhotoId());
+    @GetMapping("/photos/{photoId}/diaries")
+    public ResponseEntity<BaseResponse> getDiary(@PathVariable(name ="photoId") Long photoId){
+        DiaryGetResponse response = diaryService.getDiary(photoId);
         return ResponseEntity.ok(new BaseResponse(HttpStatus.OK.value(), "일기장 조회 완료", response));
     }
 }
