@@ -64,6 +64,10 @@ public class CategoryService {
             LocalDateTime strToLocalDateTime = LocalDateTime.parse(dateTime, format);
             photo.setSnapped_at(strToLocalDateTime);
         }
+        else{
+            LocalDateTime localDateTime = photo.getCreateDate();
+            photo.setSnapped_at(localDateTime);
+        }
 
         List<String> requiredTranslateResult = categoryInferenceResponse.getCategories();
         List<String> result = new ArrayList<>();
