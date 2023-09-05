@@ -2,8 +2,10 @@ package mmm.emopic.app.domain.diary;
 
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.base.Dto.BaseResponse;
-import mmm.emopic.app.domain.diary.dto.request.DiaryRequest;
-import mmm.emopic.app.domain.diary.dto.response.DiaryResponse;
+import mmm.emopic.app.domain.diary.dto.request.DiaryGetRequest;
+import mmm.emopic.app.domain.diary.dto.request.DiarySaveRequest;
+import mmm.emopic.app.domain.diary.dto.response.DiaryGetResponse;
+import mmm.emopic.app.domain.diary.dto.response.DiarySaveResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,9 +18,14 @@ public class DiaryController {
     private final DiaryService diaryService;
 
     @PostMapping("/photos/{photoId}/diaries")
-    public ResponseEntity<BaseResponse> saveDiary(@Validated @RequestBody DiaryRequest diaryRequest, @PathVariable(name ="photoId") Long photoId){
-        DiaryResponse response =  diaryService.saveDiary(diaryRequest.getContent(), photoId);
+    public ResponseEntity<BaseResponse> saveDiary(@Validated @RequestBody DiarySaveRequest diarySaveRequest, @PathVariable(name ="photoId") Long photoId){
+        DiarySaveResponse response =  diaryService.saveDiary(diarySaveRequest.getContent(), photoId);
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "일기장 생성 완료", response));
     }
 
+    @PostMapping("/photos/diaries")
+    public ResponseEntity<BaseResponse> getDiary(@Validated @RequestBody DiaryGetRequest diaryGetRequest){
+        DiaryGetResponse response = diaryService.getDiary(diaryGetRequest.getPhotoId());
+        return ResponseEntity.ok(new BaseResponse(HttpStatus.OK.value(), "일기장 조회 완료", response));
+    }
 }
