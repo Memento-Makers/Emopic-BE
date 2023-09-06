@@ -40,7 +40,13 @@ public class PhotoInformationResponse {
         this.photoId = photo.getId();
         this.signedUrl = photo.getSignedUrl();
         this.diaryId = diary.getId();
-        this.diaryContent = diary.getContent();
+        Optional<String> optionDiaryContent = Optional.ofNullable(diary.getContent());
+        if(optionDiaryContent.isPresent()){
+            this.diaryContent = diary.getContent();
+        }
+        else{
+            this.diaryContent = "";
+        }
         this.categories = categoryList.stream().map(Category::getName).collect(Collectors.toList());
         List<EmotionResponse> eRList = emotionList.stream().map(EmotionResponse::new).collect(Collectors.toList());
         this.emotions = new EmotionMainSubResponse(eRList);
