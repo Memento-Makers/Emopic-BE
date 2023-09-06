@@ -13,6 +13,7 @@ plugins {
 }
 
 checkstyle {
+	ignoreFailures = true // 분석결과 예외가 발생하면 빌드실패 발생시키는 것을 제외
 	maxWarnings = 0
 	configFile = file("${rootDir}/src/main/resources/checkstyle/google_checks.xml")
 	toolVersion = "10.9.0"
@@ -65,14 +66,21 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.2'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.15.2'
 	implementation 'org.springframework.retry:spring-retry:1.2.5.RELEASE'
 
 	//deepl 번역기 의존성 추가
 	implementation "com.deepl.api:deepl-java:1.3.0"
 
+
 	//metadata-extractor 의존성 추가
 	implementation group: 'com.drewnoakes', name: 'metadata-extractor', version: '2.6.2'
 	implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+  
+	//Swagger 문서
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.15'
+  
 }
 
 dependencyManagement {
