@@ -1,7 +1,6 @@
 package mmm.emopic.app.domain.photo;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.domain.category.Category;
 import mmm.emopic.app.domain.category.repository.CategoryRepository;
@@ -33,8 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,8 +54,11 @@ public class PhotoService {
     private final DeeplTranslator deeplTranslator;
     private final SignedURLReGenerator signedURLReGenerator;
 
+    @Value("${DURATION}")
+    private long duration;
     @Transactional
     public PhotoUploadResponse createPhoto(PhotoUploadRequest photoUploadRequest) {
+
         Photo photo = photoUploadRequest.toEntity();
         Photo savedPhoto = photoRepository.save(photo);
         String upLoadSignedUrl;
@@ -68,8 +70,8 @@ public class PhotoService {
             throw new RuntimeException(e);
         }
         photo.setSignedUrl(downLoadSignedUrl);
-        LocalDateTime signedUrlCreateTime = LocalDateTime.now();
-        photo.setSignedUrlCreateTime(signedUrlCreateTime);
+        LocalDateTime signedUrlExpiredTime = LocalDateTime.now().plusMinutes(duration);
+        photo.setSignedUrlExpireTime(signedUrlExpiredTime);
         return new PhotoUploadResponse(savedPhoto.getId(),upLoadSignedUrl);
     }
 
@@ -95,9 +97,9 @@ public class PhotoService {
     @Transactional
     public PhotoInformationResponse getPhotoInformation(Long photoId) throws IOException {
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
-        if(signedURLReGenerator.ReGenerate(photo)){
+        if(signedURLReGenerator.isExpired(photo)){
             photo.setSignedUrl(signedURLGenerator.generateV4GetObjectSignedUrl(photo.getName()));
-            photo.setSignedUrlCreateTime(LocalDateTime.now());
+            photo.setSignedUrlExpireTime(LocalDateTime.now().plusMinutes(duration));
         }
         Optional<Diary> optionalDiary = diaryRepository.findByPhotoId(photoId);
         Diary diary;
