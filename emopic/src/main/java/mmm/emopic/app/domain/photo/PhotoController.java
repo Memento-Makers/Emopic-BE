@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class PhotoController {
     }
 
     @GetMapping("/photos/{photoId}")
-    public ResponseEntity<BaseResponse> getPhotoInformation(@PathVariable(name="photoId") Long photoId){
+    public ResponseEntity<BaseResponse> getPhotoInformation(@PathVariable(name="photoId") Long photoId) throws IOException {
         PhotoInformationResponse response = photoService.getPhotoInformation(photoId);
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "개별 사진 조회 완료", response));
     }

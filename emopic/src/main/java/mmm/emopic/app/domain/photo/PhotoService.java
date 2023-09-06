@@ -23,7 +23,9 @@ import mmm.emopic.app.domain.photo.repository.PhotoRepositoryCustom;
 import mmm.emopic.app.domain.photo.support.DeeplTranslator;
 import mmm.emopic.app.domain.photo.support.PhotoInferenceWithAI;
 import mmm.emopic.app.domain.photo.support.SignedURLGenerator;
+import mmm.emopic.app.domain.photo.support.SignedURLReGenerator;
 import mmm.emopic.exception.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -50,6 +53,7 @@ public class PhotoService {
     private final PhotoRepositoryCustom photoRepositoryCustom;
     private final PhotoInferenceWithAI photoInferenceWithAI;
     private final DeeplTranslator deeplTranslator;
+    private final SignedURLReGenerator signedURLReGenerator;
 
     @Transactional
     public PhotoUploadResponse createPhoto(PhotoUploadRequest photoUploadRequest) {
@@ -64,6 +68,8 @@ public class PhotoService {
             throw new RuntimeException(e);
         }
         photo.setSignedUrl(downLoadSignedUrl);
+        LocalDateTime signedUrlCreateTime = LocalDateTime.now();
+        photo.setSignedUrlCreateTime(signedUrlCreateTime);
         return new PhotoUploadResponse(savedPhoto.getId(),upLoadSignedUrl);
     }
 
@@ -87,8 +93,12 @@ public class PhotoService {
     }
 
     @Transactional
-    public PhotoInformationResponse getPhotoInformation(Long photoId) {
+    public PhotoInformationResponse getPhotoInformation(Long photoId) throws IOException {
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
+        if(signedURLReGenerator.ReGenerate(photo)){
+            photo.setSignedUrl(signedURLGenerator.generateV4GetObjectSignedUrl(photo.getName()));
+            photo.setSignedUrlCreateTime(LocalDateTime.now());
+        }
         Optional<Diary> optionalDiary = diaryRepository.findByPhotoId(photoId);
         Diary diary;
         if(optionalDiary.isEmpty()){
