@@ -3,14 +3,17 @@ package mmm.emopic.app.domain.photo.support;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.storage.*;
 import lombok.Getter;
+import mmm.emopic.app.domain.photo.Photo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -56,5 +59,11 @@ public class SignedURLGenerator {
                 Storage.SignUrlOption.signWith(ServiceAccountCredentials.fromStream(new FileInputStream(keyPath))));
 
         return url.toString();
+    }
+
+    public boolean isExpired(Photo photo){
+        Optional<LocalDateTime> oldSignedUrlExpireTime = Optional.ofNullable(photo.getSignedUrlExpireTime());
+        if(oldSignedUrlExpireTime.isEmpty()) return true;
+        return LocalDateTime.now().isAfter(photo.getSignedUrlExpireTime());
     }
 }

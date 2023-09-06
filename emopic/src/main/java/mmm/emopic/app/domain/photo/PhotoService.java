@@ -22,7 +22,6 @@ import mmm.emopic.app.domain.photo.repository.PhotoRepositoryCustom;
 import mmm.emopic.app.domain.photo.support.DeeplTranslator;
 import mmm.emopic.app.domain.photo.support.PhotoInferenceWithAI;
 import mmm.emopic.app.domain.photo.support.SignedURLGenerator;
-import mmm.emopic.app.domain.photo.support.SignedURLReGenerator;
 import mmm.emopic.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -33,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +50,6 @@ public class PhotoService {
     private final PhotoRepositoryCustom photoRepositoryCustom;
     private final PhotoInferenceWithAI photoInferenceWithAI;
     private final DeeplTranslator deeplTranslator;
-    private final SignedURLReGenerator signedURLReGenerator;
 
     @Value("${DURATION}")
     private long duration;
@@ -97,7 +94,7 @@ public class PhotoService {
     @Transactional
     public PhotoInformationResponse getPhotoInformation(Long photoId) throws IOException {
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
-        if(signedURLReGenerator.isExpired(photo)){
+        if(signedURLGenerator.isExpired(photo)){
             photo.setSignedUrl(signedURLGenerator.generateV4GetObjectSignedUrl(photo.getName()));
             photo.setSignedUrlExpireTime(LocalDateTime.now().plusMinutes(duration));
         }
