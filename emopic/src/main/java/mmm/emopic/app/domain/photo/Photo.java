@@ -32,7 +32,7 @@ public class Photo extends BaseEntity {
     @Lob
     private String signedUrl;
 
-    private LocalDateTime signedUrlCreateTime;
+    private LocalDateTime signedUrlExpireTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
