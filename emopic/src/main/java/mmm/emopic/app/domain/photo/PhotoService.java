@@ -1,7 +1,6 @@
 package mmm.emopic.app.domain.photo;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.domain.category.Category;
 import mmm.emopic.app.domain.category.repository.CategoryRepository;
@@ -24,6 +23,7 @@ import mmm.emopic.app.domain.photo.support.DeeplTranslator;
 import mmm.emopic.app.domain.photo.support.PhotoInferenceWithAI;
 import mmm.emopic.app.domain.photo.support.SignedURLGenerator;
 import mmm.emopic.exception.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,8 +51,11 @@ public class PhotoService {
     private final PhotoInferenceWithAI photoInferenceWithAI;
     private final DeeplTranslator deeplTranslator;
 
+    @Value("${DURATION}")
+    private long duration;
     @Transactional
     public PhotoUploadResponse createPhoto(PhotoUploadRequest photoUploadRequest) {
+
         Photo photo = photoUploadRequest.toEntity();
         Photo savedPhoto = photoRepository.save(photo);
         String upLoadSignedUrl;
@@ -64,6 +67,8 @@ public class PhotoService {
             throw new RuntimeException(e);
         }
         photo.setSignedUrl(downLoadSignedUrl);
+        LocalDateTime signedUrlExpiredTime = LocalDateTime.now().plusMinutes(duration);
+        photo.setSignedUrlExpireTime(signedUrlExpiredTime);
         return new PhotoUploadResponse(savedPhoto.getId(),upLoadSignedUrl);
     }
 
@@ -87,8 +92,12 @@ public class PhotoService {
     }
 
     @Transactional
-    public PhotoInformationResponse getPhotoInformation(Long photoId) {
+    public PhotoInformationResponse getPhotoInformation(Long photoId) throws IOException {
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
+        if(signedURLGenerator.isExpired(photo)){
+            photo.setSignedUrl(signedURLGenerator.generateV4GetObjectSignedUrl(photo.getName()));
+            photo.setSignedUrlExpireTime(LocalDateTime.now().plusMinutes(duration));
+        }
         Optional<Diary> optionalDiary = diaryRepository.findByPhotoId(photoId);
         Diary diary;
         if(optionalDiary.isEmpty()){
