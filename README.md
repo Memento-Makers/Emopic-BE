@@ -6,6 +6,11 @@
 <div align="center">
 <br />
 <table>
+   <tr>
+     <a href="https://github.com/Memento-Makers">
+    <img src="https://github.com/Memento-Makers/Emopic-FE/assets/74234333/906aa020-4fb6-433b-a375-22c3a8ad380b" height="100px" />
+     </a>
+  </tr>
   <tr>
     <td align="center">
       <img src="https://avatars.githubusercontent.com/dar-jeeling" width="160px;"  alt="김다은"/>
