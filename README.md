@@ -1,6 +1,10 @@
 # Emopic-BE
 
 
+# ERD
+
+<img width="1557" alt="Screen Shot 2022-07-08 at 15 27 12" src="https://github.com/Memento-Makers/Emopic-BE/assets/80192612/fc7eeb7a-733a-4eb4-aa19-121e3318c0f2">
+
 
 # 팀원 소개
 <div align="center">
