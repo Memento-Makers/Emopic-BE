@@ -1,6 +1,5 @@
 package mmm.emopic.app.domain.category;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.domain.category.dto.response.CategoryDetailResponse;
@@ -11,13 +10,12 @@ import mmm.emopic.app.domain.category.repository.PhotoCategoryRepository;
 import mmm.emopic.app.domain.photo.Photo;
 import mmm.emopic.app.domain.photo.repository.PhotoRepository;
 import mmm.emopic.app.domain.photo.support.CategoryInferenceResponse;
-import mmm.emopic.app.domain.photo.support.DeeplTranslator;
+import mmm.emopic.app.domain.photo.support.Translators;
 import mmm.emopic.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import mmm.emopic.app.domain.photo.support.PhotoInferenceWithAI;
 
-import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,7 +32,7 @@ public class CategoryService {
     private final PhotoRepository photoRepository;
     private final PhotoCategoryRepository photoCategoryRepository;
     private final PhotoInferenceWithAI photoInferenceWithAI;
-    private final DeeplTranslator deeplTranslator;
+    private final Translators translators;
     @Transactional
     public Category createCategory(String name){
         Category category = Category.builder().name(name).build();
@@ -72,7 +70,7 @@ public class CategoryService {
         List<String> requiredTranslateResult = categoryInferenceResponse.getCategories();
         List<String> result = new ArrayList<>();
         for(String translateText :requiredTranslateResult){
-            result.add(deeplTranslator.translate(translateText));
+            result.add(translators.papagoTranslate(translateText));
         }
         for(String categoryName : result){
             Category category = categoryRepository.findByName(categoryName).orElseGet(() -> createCategory(categoryName)

@@ -41,6 +41,10 @@ ai-url: ${INFERENCE_URL}
 
 deepl-auth-key: ${DEEPL_AUTH_KEY}
 
+papago-auth:
+  id : ${PAPAGO_AUTH_ID}
+  key : ${PAPAGO_AUTH_KEY}
+
 
 jwt:
   token:

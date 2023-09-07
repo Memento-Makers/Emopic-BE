@@ -19,7 +19,7 @@ import mmm.emopic.app.domain.photo.dto.response.PhotoInformationResponse;
 import mmm.emopic.app.domain.photo.dto.response.PhotoUploadResponse;
 import mmm.emopic.app.domain.photo.repository.PhotoRepository;
 import mmm.emopic.app.domain.photo.repository.PhotoRepositoryCustom;
-import mmm.emopic.app.domain.photo.support.DeeplTranslator;
+import mmm.emopic.app.domain.photo.support.Translators;
 import mmm.emopic.app.domain.photo.support.PhotoInferenceWithAI;
 import mmm.emopic.app.domain.photo.support.SignedURLGenerator;
 import mmm.emopic.exception.ResourceNotFoundException;
@@ -49,7 +49,7 @@ public class PhotoService {
     private final EmotionRepository emotionRepository;
     private final PhotoRepositoryCustom photoRepositoryCustom;
     private final PhotoInferenceWithAI photoInferenceWithAI;
-    private final DeeplTranslator deeplTranslator;
+    private final Translators translators;
 
     @Value("${DURATION}")
     private long duration;
@@ -77,7 +77,7 @@ public class PhotoService {
         // 캡셔닝 내용을 AI inference서버에서 받아와야 사용 가능
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
         String result = photoInferenceWithAI.getCaptionByPhoto(photo.getSignedUrl());
-        result = deeplTranslator.translate(result);
+        result = translators.deeplTranslate(result);
         photo.setCaption(result);
         Optional<Diary> optionalDiary = diaryRepository.findByPhotoId(photoId);
         Diary diary;
