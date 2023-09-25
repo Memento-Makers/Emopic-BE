@@ -73,4 +73,13 @@ public class PhotoController {
         Page<PhotoInCategoryResponse> response = photoService.getPhotoInCategory(categoryId, pageable);
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "분류 결과 세부 조회 성공", response));
     }
+
+    @GetMapping("/photos")
+    @Operation(summary = "전체 사진 조회", responses = {
+            @ApiResponse(responseCode = "200", description = "전체 사진 조회 성공", content = @Content(schema = @Schema(implementation = PhotoInformationResponse.class)))
+    })
+    public ResponseEntity<BaseResponse> getPhotosInformation() throws IOException {
+        List<PhotoInformationResponse> response = photoService.getPhotosInformation();
+        return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "전체 사진 조회 성공", response));
+    }
 }

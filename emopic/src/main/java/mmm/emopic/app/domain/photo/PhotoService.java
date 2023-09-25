@@ -138,4 +138,37 @@ public class PhotoService {
 
         return new PageImpl<>(results,pageable, photoList.getTotalElements());
     }
+
+    public List<PhotoInformationResponse> getPhotosInformation() throws IOException {
+        List<Photo> photoList = photoRepository.findAll();
+        List<PhotoInformationResponse> photoInformationResponseList = new ArrayList<>();
+        for(Photo photo: photoList) {
+            if (signedURLGenerator.isExpired(photo)) {
+                photo.setSignedUrl(signedURLGenerator.generateV4GetObjectSignedUrl(photo.getName()));
+                photo.setSignedUrlExpireTime(LocalDateTime.now().plusMinutes(duration));
+            }
+            Optional<Diary> optionalDiary = diaryRepository.findByPhotoId(photo.getId());
+            Diary diary;
+            if (optionalDiary.isEmpty()) {
+                diary = Diary.builder().photo(photo).build();
+                diary = diaryRepository.save(diary);
+            } else {
+                diary = optionalDiary.get();
+            }
+            List<PhotoCategory> photoCategoryList = photoCategoryRepository.findByPhotoId(photo.getId());
+            List<Category> categories = new ArrayList<>();
+            for (PhotoCategory photoCategory : photoCategoryList) {
+                Long cid = photoCategory.getCategory().getId();
+                categories.add(categoryRepository.findById(cid).orElseThrow(() -> new ResourceNotFoundException("category", cid)));
+            }
+            List<PhotoEmotion> photoEmotionList = photoEmotionRepository.findByPhotoId(photo.getId());
+            List<Emotion> emotions = new ArrayList<>();
+            for (PhotoEmotion photoEmotion : photoEmotionList) {
+                Long eid = photoEmotion.getEmotion().getId();
+                emotions.add(emotionRepository.findById(eid).orElseThrow(() -> new ResourceNotFoundException("emotion", eid)));
+            }
+            photoInformationResponseList.add(new PhotoInformationResponse(photo,diary,categories,emotions));
+        }
+        return photoInformationResponseList;
+    }
 }
