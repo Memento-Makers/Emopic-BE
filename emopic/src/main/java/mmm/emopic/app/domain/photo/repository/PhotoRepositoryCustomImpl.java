@@ -63,7 +63,6 @@ public class PhotoRepositoryCustomImpl implements PhotoRepositoryCustom {
         List<Photo> queryResults = queryFactory
                 .selectFrom(photo)
                 .where(photo.signedUrlExpireTime.before(tomorrow))
-                .orderBy(photo.createDate.desc())
                 .fetch();
         return queryResults;
     }
