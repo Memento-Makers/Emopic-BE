@@ -66,11 +66,11 @@ public class PhotoService {
             throw new RuntimeException(e);
         }
         photo.setSignedUrl(downLoadSignedUrl);
-        photo.setTb_signedUrl(thumbnailSignedUrl);
+        photo.setTbSignedUrl(thumbnailSignedUrl);
         LocalDateTime signedUrlExpiredTime = LocalDateTime.now().plusMinutes(duration);
         LocalDateTime thumbnailSignedUrlExpiredTime = LocalDateTime.now().plusMinutes(duration);
         photo.setSignedUrlExpireTime(signedUrlExpiredTime);
-        photo.setTb_signedUrlExpireTime(thumbnailSignedUrlExpiredTime);
+        photo.setTbSignedUrlExpireTime(thumbnailSignedUrlExpiredTime);
         return new PhotoUploadResponse(savedPhoto.getId(),upLoadSignedUrl);
     }
 
