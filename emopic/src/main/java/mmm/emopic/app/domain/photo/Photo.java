@@ -34,6 +34,11 @@ public class Photo extends BaseEntity {
 
     private LocalDateTime signedUrlExpireTime;
 
+    @Lob
+    private String tbSignedUrl;
+
+    private LocalDateTime tbSignedUrlExpireTime;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Member member;

@@ -45,6 +45,18 @@ public class PhotoRepositoryCustomImpl implements PhotoRepositoryCustom {
 
     }
 
+    @Override
+    public Page<Photo> findAllPhotos(Pageable pageable){
+        List<Photo> queryResults = queryFactory
+                .selectFrom(photo)
+                .orderBy(makeSort(pageable.getSort()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Page<Photo> pagedResults = new PageImpl<>(queryResults, pageable, queryResults.size());
+        return pagedResults;
+    }
     private OrderSpecifier[] makeSort(Sort sort) {
         List<OrderSpecifier> orders = new ArrayList<>();
 
