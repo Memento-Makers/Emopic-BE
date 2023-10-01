@@ -12,11 +12,8 @@ import mmm.emopic.app.domain.emotion.Emotion;
 import mmm.emopic.app.domain.emotion.repository.EmotionRepository;
 import mmm.emopic.app.domain.emotion.PhotoEmotion;
 import mmm.emopic.app.domain.emotion.repository.PhotoEmotionRepository;
-import mmm.emopic.app.domain.photo.dto.response.PhotoCaptionResponse;
+import mmm.emopic.app.domain.photo.dto.response.*;
 import mmm.emopic.app.domain.photo.dto.request.PhotoUploadRequest;
-import mmm.emopic.app.domain.photo.dto.response.PhotoInCategoryResponse;
-import mmm.emopic.app.domain.photo.dto.response.PhotoInformationResponse;
-import mmm.emopic.app.domain.photo.dto.response.PhotoUploadResponse;
 import mmm.emopic.app.domain.photo.repository.PhotoRepository;
 import mmm.emopic.app.domain.photo.repository.PhotoRepositoryCustom;
 import mmm.emopic.app.domain.photo.support.Translators;
@@ -60,15 +57,20 @@ public class PhotoService {
         Photo savedPhoto = photoRepository.save(photo);
         String upLoadSignedUrl;
         String downLoadSignedUrl;
+        String thumbnailSignedUrl;
         try {
             upLoadSignedUrl = signedURLGenerator.generateV4PutObjectSignedUrl(savedPhoto.getName());
             downLoadSignedUrl = signedURLGenerator.generateV4GetObjectSignedUrl(savedPhoto.getName());
+            thumbnailSignedUrl = signedURLGenerator.generateV4GetObjectSignedUrl("thumbnail/"+savedPhoto.getName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         photo.setSignedUrl(downLoadSignedUrl);
+        photo.setTb_signedUrl(thumbnailSignedUrl);
         LocalDateTime signedUrlExpiredTime = LocalDateTime.now().plusMinutes(duration);
+        LocalDateTime thumbnailSignedUrlExpiredTime = LocalDateTime.now().plusMinutes(duration);
         photo.setSignedUrlExpireTime(signedUrlExpiredTime);
+        photo.setTb_signedUrlExpireTime(thumbnailSignedUrlExpiredTime);
         return new PhotoUploadResponse(savedPhoto.getId(),upLoadSignedUrl);
     }
 
@@ -139,9 +141,10 @@ public class PhotoService {
         return new PageImpl<>(results,pageable, photoList.getTotalElements());
     }
 
-    public List<PhotoInformationResponse> getPhotosInformation() throws IOException {
-        List<Photo> photoList = photoRepository.findAll();
-        List<PhotoInformationResponse> photoInformationResponseList = new ArrayList<>();
+    public Page<PhotosInformationResponse> getPhotosInformation(Pageable pageable) throws IOException {
+        //List<Photo> photoList = photoRepository.findAll();
+        Page<Photo> photoList = photoRepositoryCustom.findAllPhotos(pageable);
+        List<PhotosInformationResponse> photosInformationResponseList = new ArrayList<>();
         for(Photo photo: photoList) {
             if (signedURLGenerator.isExpired(photo)) {
                 photo.setSignedUrl(signedURLGenerator.generateV4GetObjectSignedUrl(photo.getName()));
@@ -167,8 +170,9 @@ public class PhotoService {
                 Long eid = photoEmotion.getEmotion().getId();
                 emotions.add(emotionRepository.findById(eid).orElseThrow(() -> new ResourceNotFoundException("emotion", eid)));
             }
-            photoInformationResponseList.add(new PhotoInformationResponse(photo,diary,categories,emotions));
+            photosInformationResponseList.add(new PhotosInformationResponse(photo,diary,categories,emotions));
         }
-        return photoInformationResponseList;
+        //return photosInformationResponseList;
+        return new PageImpl<>(photosInformationResponseList,pageable, photoList.getTotalElements());
     }
 }
