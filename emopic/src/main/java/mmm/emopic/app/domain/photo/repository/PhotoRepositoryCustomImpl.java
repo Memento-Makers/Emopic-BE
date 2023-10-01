@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import static mmm.emopic.app.domain.category.QPhotoCategory.photoCategory;
 import static mmm.emopic.app.domain.photo.QPhoto.photo;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +58,16 @@ public class PhotoRepositoryCustomImpl implements PhotoRepositoryCustom {
         Page<Photo> pagedResults = new PageImpl<>(queryResults, pageable, queryResults.size());
         return pagedResults;
     }
+    public List<Photo> findAllByExpiredTime() {
+        LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+        List<Photo> queryResults = queryFactory
+                .selectFrom(photo)
+                .where(photo.signedUrlExpireTime.before(tomorrow))
+                .orderBy(photo.createDate.desc())
+                .fetch();
+        return queryResults;
+    }
+
     private OrderSpecifier[] makeSort(Sort sort) {
         List<OrderSpecifier> orders = new ArrayList<>();
 

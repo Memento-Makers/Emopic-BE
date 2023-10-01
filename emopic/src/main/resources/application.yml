@@ -73,3 +73,6 @@ swagger:
 
 cors:
   list : ${CORS_LIST}
+
+scheduler:
+  cron: ${SCHEDULE}
