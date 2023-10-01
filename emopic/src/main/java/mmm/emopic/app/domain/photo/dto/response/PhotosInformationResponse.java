@@ -16,14 +16,17 @@ import java.util.stream.Collectors;
 public class PhotosInformationResponse {
     private Long photoId;
 
+    private String thumbnailUrl;
+
     private String uploadDateTime;
 
     private List<String> categories;
 
     private EmotionMainSubResponse emotions;
 
-    public PhotosInformationResponse(Photo photo, Diary diary, List<Category> categoryList, List<Emotion> emotionList){
+    public PhotosInformationResponse(Photo photo, List<Category> categoryList, List<Emotion> emotionList){
         this.photoId = photo.getId();
+        this.thumbnailUrl = photo.getTbSignedUrl();
         this.categories = categoryList.stream().map(Category::getName).collect(Collectors.toList());
         List<EmotionResponse> eRList = emotionList.stream().map(EmotionResponse::new).collect(Collectors.toList());
         this.emotions = new EmotionMainSubResponse(eRList);

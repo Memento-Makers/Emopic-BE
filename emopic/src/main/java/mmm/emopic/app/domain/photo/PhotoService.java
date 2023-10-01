@@ -142,21 +142,12 @@ public class PhotoService {
     }
 
     public Page<PhotosInformationResponse> getPhotosInformation(Pageable pageable) throws IOException {
-        //List<Photo> photoList = photoRepository.findAll();
         Page<Photo> photoList = photoRepositoryCustom.findAllPhotos(pageable);
         List<PhotosInformationResponse> photosInformationResponseList = new ArrayList<>();
         for(Photo photo: photoList) {
             if (signedURLGenerator.isExpired(photo)) {
                 photo.setSignedUrl(signedURLGenerator.generateV4GetObjectSignedUrl(photo.getName()));
                 photo.setSignedUrlExpireTime(LocalDateTime.now().plusMinutes(duration));
-            }
-            Optional<Diary> optionalDiary = diaryRepository.findByPhotoId(photo.getId());
-            Diary diary;
-            if (optionalDiary.isEmpty()) {
-                diary = Diary.builder().photo(photo).build();
-                diary = diaryRepository.save(diary);
-            } else {
-                diary = optionalDiary.get();
             }
             List<PhotoCategory> photoCategoryList = photoCategoryRepository.findByPhotoId(photo.getId());
             List<Category> categories = new ArrayList<>();
@@ -170,9 +161,8 @@ public class PhotoService {
                 Long eid = photoEmotion.getEmotion().getId();
                 emotions.add(emotionRepository.findById(eid).orElseThrow(() -> new ResourceNotFoundException("emotion", eid)));
             }
-            photosInformationResponseList.add(new PhotosInformationResponse(photo,diary,categories,emotions));
+            photosInformationResponseList.add(new PhotosInformationResponse(photo,categories,emotions));
         }
-        //return photosInformationResponseList;
         return new PageImpl<>(photosInformationResponseList,pageable, photoList.getTotalElements());
     }
 }
