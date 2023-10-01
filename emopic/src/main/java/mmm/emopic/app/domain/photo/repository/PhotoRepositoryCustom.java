@@ -7,4 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface PhotoRepositoryCustom {
     Page<Photo> findByCategoryId(Long categoryId, Pageable pageable);
+
+    Page<Photo> findAllPhotos(Pageable pageable);
 }
