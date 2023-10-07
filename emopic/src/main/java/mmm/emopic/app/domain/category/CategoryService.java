@@ -29,58 +29,6 @@ import static mmm.emopic.app.domain.category.QPhotoCategory.photoCategory;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryRepositoryCustom categoryRepositoryCustom;
-    private final PhotoRepository photoRepository;
-    private final PhotoCategoryRepository photoCategoryRepository;
-    private final PhotoInferenceWithAI photoInferenceWithAI;
-    private final Translators translators;
-    @Transactional
-    public Category createCategory(String name){
-        Category category = Category.builder().name(name).build();
-        return categoryRepository.save(category);
-    }
-
-    @Transactional
-    public void saveCategoriesInPhoto(Long photoId, List<Long> categoryIdList){
-        Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
-        for(Long cid : categoryIdList){
-            Category category = categoryRepository.findById(cid).orElseThrow(() -> new ResourceNotFoundException("category", cid));
-            PhotoCategory photoCategory = PhotoCategory.builder().photo(photo).category(category).build();
-            PhotoCategory savedPhotoCategory = photoCategoryRepository.save(photoCategory);
-        }
-    }
-    @Transactional
-    public CategoryResponse requestCategories(Long photoId) throws Exception {
-
-
-        Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
-
-        CategoryInferenceResponse categoryInferenceResponse = photoInferenceWithAI.getClassificationsByPhoto(photo.getSignedUrl());
-
-        String dateTime = categoryInferenceResponse.getDateTime();
-        if(!dateTime.isEmpty()) {
-            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
-            LocalDateTime strToLocalDateTime = LocalDateTime.parse(dateTime, format);
-            photo.setSnapped_at(strToLocalDateTime);
-        }
-        else{
-            LocalDateTime localDateTime = photo.getCreateDate();
-            photo.setSnapped_at(localDateTime);
-        }
-
-        List<String> requiredTranslateResult = categoryInferenceResponse.getCategories();
-        List<String> result = new ArrayList<>();
-        for(String translateText :requiredTranslateResult){
-            result.add(translators.papagoTranslate(translateText));
-        }
-        for(String categoryName : result){
-            Category category = categoryRepository.findByName(categoryName).orElseGet(() -> createCategory(categoryName)
-            );
-            PhotoCategory photoCategory = PhotoCategory.builder().photo(photo).category(category).build();
-            PhotoCategory savedPhotoCategory = photoCategoryRepository.save(photoCategory);
-        }
-
-        return new CategoryResponse(result);
-    }
 
     @Transactional
     public CategoryDetailResponse getCategoriesAsMuchAsSize(Long size) {

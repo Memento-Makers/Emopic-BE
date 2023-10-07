@@ -24,15 +24,6 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
 
     private final CategoryService categoryService;
-    @PostMapping("/photos/categories")
-    @Operation(summary = "분류 결과 조회", responses = {
-            @ApiResponse(responseCode = "201", description = "분류 결과 조회 성공", content = @Content(schema = @Schema(implementation = CategoryResponse.class)))
-    })
-    public ResponseEntity<BaseResponse> requestCategories(@Validated @RequestBody CategoryRequest categoryGetAllRequest) throws Exception {
-
-        CategoryResponse response = categoryService.requestCategories(categoryGetAllRequest.getPhotoId());
-        return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "분류 결과 조회 성공", response));
-    }
 
     @GetMapping("/photos/categories")
     @Operation(summary = "분류 결과 전체 조회", responses = {

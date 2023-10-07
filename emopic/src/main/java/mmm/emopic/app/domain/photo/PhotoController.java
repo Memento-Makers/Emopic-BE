@@ -35,28 +35,19 @@ public class PhotoController {
     private final PhotoService photoService;
 
     @PostMapping("/photos")
-    @Operation(summary = "이미지 업로드", description = "이미지 업로드용 signed_url 생성요청", responses = {
-            @ApiResponse(responseCode = "201", description = "signed_url 생성 성공", content = @Content(schema = @Schema(implementation = PhotoUploadResponse.class)))
+    @Operation(summary = "이미지 업로드", description = "이미지 업로드 요청", responses = {
+            @ApiResponse(responseCode = "201", description = "이미지 업로드 성공", content = @Content(schema = @Schema(implementation = PhotoUploadResponse.class)))
     })
-    public ResponseEntity<BaseResponse> createPhoto(@Validated @RequestBody PhotoUploadRequest photoUploadRequest){
+    public ResponseEntity<BaseResponse> createPhoto(@Validated PhotoUploadRequest photoUploadRequest) {
         PhotoUploadResponse response = photoService.createPhoto(photoUploadRequest);
-        return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "이미지 업로드 signed_url 생성 성공",response));
-    }
-
-    @PostMapping("/photos/caption")
-    @Operation(summary = "이미지 캡셔닝", responses = {
-            @ApiResponse(responseCode = "200", description = "캡셔닝 생성 성공", content = @Content(schema = @Schema(implementation = PhotoCaptionResponse.class)))
-    })
-    public ResponseEntity<BaseResponse> getPhotoCaption(@Validated @RequestBody PhotoCaptionRequest photoCaptionRequest) throws Exception {
-        PhotoCaptionResponse response = photoService.getPhotoCaption(photoCaptionRequest.getPhotoId());
-        return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "캡셔닝 생성 성공", response));
+        return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "이미지 업로드 성공",response));
     }
 
     @GetMapping("/photos/{photoId}")
     @Operation(summary = "개별 사진 조회", responses = {
             @ApiResponse(responseCode = "200", description = "개별 사진 조회 성공", content = @Content(schema = @Schema(implementation = PhotoInformationResponse.class)))
     })
-    public ResponseEntity<BaseResponse> getPhotoInformation(@PathVariable(name="photoId") Long photoId) throws IOException {
+    public ResponseEntity<BaseResponse> getPhotoInformation(@PathVariable(name="photoId") Long photoId){
         PhotoInformationResponse response = photoService.getPhotoInformation(photoId);
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "개별 사진 조회 성공", response));
     }
