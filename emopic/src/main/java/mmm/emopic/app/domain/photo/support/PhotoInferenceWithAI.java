@@ -3,34 +3,23 @@ package mmm.emopic.app.domain.photo.support;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
-import lombok.Getter;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-@Getter
+import java.util.*;
+
 @Configuration
 public class PhotoInferenceWithAI {
 
     @Value("${ai-url}")
     private String inferenceUrl;
-    public CategoryInferenceResponse getClassificationsByPhoto(String signedUrl) throws URISyntaxException, JsonProcessingException {
+    public Optional<CategoryInferenceResponse> getClassificationsByPhoto(String signedUrl) {
         List<String> result= new ArrayList<>();
 
         String requestUrl = inferenceUrl+"classification";
@@ -49,12 +38,15 @@ public class PhotoInferenceWithAI {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        CategoryInferenceResponse categoryInferenceResponse = mapper.readValue(response, CategoryInferenceResponse.class);
-
-        return categoryInferenceResponse;
+        CategoryInferenceResponse categoryInferenceResponse = null;
+        try {
+            return Optional.of(mapper.readValue(response, CategoryInferenceResponse.class));
+        } catch (JsonProcessingException e) {
+            return Optional.empty();
+        }
     }
 
-    public String getCaptionByPhoto(String signedUrl) throws URISyntaxException, JsonProcessingException {
+    public Optional<CaptionInferenceResponse> getCaptionByPhoto(String signedUrl){
 
         String requestUrl = inferenceUrl + "captioning";;
 
@@ -72,11 +64,11 @@ public class PhotoInferenceWithAI {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        CaptionInferenceResponse captionInferenceResponse = mapper.readValue(response, CaptionInferenceResponse.class);
-        String result = captionInferenceResponse.getCaption();
-        return result;
+        try {
+            return Optional.of(mapper.readValue(response, CaptionInferenceResponse.class));
+        } catch (JsonProcessingException e) {
+            return Optional.empty();
+        }
     }
 
-    public PhotoInferenceWithAI(){
-    }
 }
