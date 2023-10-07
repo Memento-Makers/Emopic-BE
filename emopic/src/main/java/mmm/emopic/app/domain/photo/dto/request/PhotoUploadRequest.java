@@ -3,18 +3,15 @@ package mmm.emopic.app.domain.photo.dto.request;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mmm.emopic.app.domain.photo.Photo;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 @Getter
-@NoArgsConstructor
 public class PhotoUploadRequest {
 
-    @NotBlank
-    private String fileName;
+    private MultipartFile image;
 
-    public Photo toEntity() {
-        return Photo.builder()
-                .name(fileName)
-                .build();
+    public PhotoUploadRequest(MultipartFile image) {
+        this.image = image;
     }
 }
