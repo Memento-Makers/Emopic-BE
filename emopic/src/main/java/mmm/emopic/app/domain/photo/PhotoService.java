@@ -64,8 +64,12 @@ public class PhotoService {
 
         String fileName =  now.format(format) + userId.toString();
         // 이미지 업로드
-        imageUploader.imageUpload(fileName, photoUploadRequest.getImage());
-
+        try {
+            imageUploader.imageUpload(fileName, photoUploadRequest.getImage());
+        }
+        catch (IOException e) {
+            throw new RuntimeException("이미지 업로드 중 에러 발생");
+        }
         // 다운로드용 signed_url 생성
         String signedUrl = getSignedUrl(fileName).orElseThrow(() -> new RuntimeException("create signed url error"));
         String thumbnailSignedUrl = getSignedUrl("thumbnail/"+fileName).orElseThrow(() -> new RuntimeException("create signed url error"));;
@@ -93,9 +97,9 @@ public class PhotoService {
         diaryRepository.save(diary);
 
         // categories 요청하기
-        List<String> categories = requestCategories(savedPhoto);
+        requestCategories(savedPhoto);
 
-        return new PhotoUploadResponse(savedPhoto.getId(),signedUrl,thumbnailSignedUrl,categories);
+        return new PhotoUploadResponse(savedPhoto.getId(),thumbnailSignedUrl);
     }
     // 새로운 카테고리 만들기
     @Transactional
@@ -104,7 +108,7 @@ public class PhotoService {
         return categoryRepository.save(category);
     }
     @Transactional
-    public List<String> requestCategories(Photo photo){
+    public void requestCategories(Photo photo){
 
         CategoryInferenceResponse categoryInferenceResponse = photoInferenceWithAI.getClassificationsByPhoto(photo.getSignedUrl()).orElseThrow(() -> new RuntimeException("classification 과정에서 오류 발생"));
 
@@ -118,8 +122,6 @@ public class PhotoService {
             PhotoCategory photoCategory = PhotoCategory.builder().photo(photo).category(category).build();
             photoCategoryRepository.save(photoCategory);
         }
-
-        return result;
     }
     // 캡셔닝 내용을 AI inference 서버에서 받아오는 함수
     public String requestCaption(String signedUrl) {

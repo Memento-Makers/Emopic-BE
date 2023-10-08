@@ -10,15 +10,10 @@ import java.util.List;
 public class PhotoUploadResponse {
 
     private Long photoId;
-    private String signedUrl;
     private String tbSignedUrl;
 
-    private List<String> categories;
-
-    public PhotoUploadResponse(Long photoId, String signedUrl, String tbSignedUrl, List<String> categories) {
+    public PhotoUploadResponse(Long photoId,String tbSignedUrl) {
         this.photoId = photoId;
-        this.signedUrl = signedUrl;
         this.tbSignedUrl = tbSignedUrl;
-        this.categories = categories;
     }
 }
