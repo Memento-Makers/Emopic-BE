@@ -64,12 +64,8 @@ public class PhotoService {
 
         String fileName =  now.format(format) + userId.toString();
         // 이미지 업로드
-        try {
-            imageUploader.imageUpload(fileName, photoUploadRequest.getImage());
-        }
-        catch (IOException e) {
-            throw new RuntimeException("이미지 업로드 중 에러 발생");
-        }
+        imageUploader.imageUpload(fileName, photoUploadRequest.getImage());
+
         // 다운로드용 signed_url 생성
         String signedUrl = getSignedUrl(fileName).orElseThrow(() -> new RuntimeException("create signed url error"));
         String thumbnailSignedUrl = getSignedUrl("thumbnail/"+fileName).orElseThrow(() -> new RuntimeException("create signed url error"));;
