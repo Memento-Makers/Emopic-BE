@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.base.Dto.BaseResponse;
 import mmm.emopic.app.domain.photo.dto.response.*;
-import mmm.emopic.app.domain.photo.dto.request.PhotoCaptionRequest;
 import mmm.emopic.app.domain.photo.dto.request.PhotoUploadRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -66,8 +65,8 @@ public class PhotoController {
     @Operation(summary = "전체 사진 조회", responses = {
             @ApiResponse(responseCode = "200", description = "전체 사진 조회 성공", content = @Content(schema = @Schema(implementation = PhotoInformationResponse.class)))
     })
-    public ResponseEntity<BaseResponse> getPhotosInformation(@PageableDefault(page = 0, size = 10, sort="snapped_at",direction = Sort.Direction.DESC) Pageable pageable) throws IOException {
-        Page<PhotosInformationResponse> response = photoService.getPhotosInformation(pageable);
+    public ResponseEntity<BaseResponse> getPhotosInformation(@PageableDefault(page = 0, size = 10, sort="snapped_at",direction = Sort.Direction.DESC) Pageable pageable){
+        PageResponse response = photoService.getPhotosInformation(pageable);
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "전체 사진 조회 성공", response));
     }
 }
