@@ -4,6 +4,7 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.domain.photo.Photo;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import static mmm.emopic.app.domain.category.QPhotoCategory.photoCategory;
@@ -54,9 +56,11 @@ public class PhotoRepositoryCustomImpl implements PhotoRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+        JPQLQuery<Photo> count = queryFactory
+                .select(photo)
+                .from(photo);
 
-        Page<Photo> pagedResults = new PageImpl<>(queryResults, pageable, queryResults.size());
-        return pagedResults;
+        return PageableExecutionUtils.getPage(queryResults,pageable,() -> count.fetchCount());
     }
     public List<Photo> findAllByExpiredTime() {
         LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);

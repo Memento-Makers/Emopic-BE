@@ -180,14 +180,10 @@ public class PhotoService {
         return new PageImpl<>(results,pageable, photoList.getTotalElements());
     }
 
-    public Page<PhotosInformationResponse> getPhotosInformation(Pageable pageable) throws IOException {
+    public PageResponse getPhotosInformation(Pageable pageable){
         Page<Photo> photoList = photoRepositoryCustom.findAllPhotos(pageable);
         List<PhotosInformationResponse> photosInformationResponseList = new ArrayList<>();
         for(Photo photo: photoList) {
-            if (signedURLGenerator.isExpired(photo)) {
-                photo.setSignedUrl(signedURLGenerator.generateV4GetObjectSignedUrl(photo.getName()));
-                photo.setSignedUrlExpireTime(LocalDateTime.now().plusMinutes(duration));
-            }
             List<PhotoCategory> photoCategoryList = photoCategoryRepository.findByPhotoId(photo.getId());
             List<Category> categories = new ArrayList<>();
             for (PhotoCategory photoCategory : photoCategoryList) {
@@ -202,6 +198,6 @@ public class PhotoService {
             }
             photosInformationResponseList.add(new PhotosInformationResponse(photo,categories,emotions));
         }
-        return new PageImpl<>(photosInformationResponseList,pageable, photoList.getTotalElements());
+        return new PageResponse(new PageImpl<>(photosInformationResponseList,photoList.getPageable(),photoList.getTotalElements()));
     }
 }
