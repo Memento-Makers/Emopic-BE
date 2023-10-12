@@ -34,15 +34,27 @@ public class Photo extends BaseEntity {
 
     private LocalDateTime signedUrlExpireTime;
 
+    @Lob
+    private String tbSignedUrl;
+
+    private LocalDateTime tbSignedUrlExpireTime;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Member member;
 
     @Builder
-    public Photo(String name, LocalDateTime snapped_at, String caption, Boolean location_YM) {
+    public Photo(Long id, String name, LocalDateTime snapped_at, String caption, Boolean location_YM, String signedUrl, LocalDateTime signedUrlExpireTime, String tbSignedUrl, LocalDateTime tbSignedUrlExpireTime, Member member) {
+        this.id = id;
         this.name = name;
         this.snapped_at = snapped_at;
         this.caption = caption;
         this.location_YM = location_YM;
+        this.signedUrl = signedUrl;
+        this.signedUrlExpireTime = signedUrlExpireTime;
+        this.tbSignedUrl = tbSignedUrl;
+        this.tbSignedUrlExpireTime = tbSignedUrlExpireTime;
+        this.member = member;
     }
+
 }

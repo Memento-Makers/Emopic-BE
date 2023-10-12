@@ -82,7 +82,10 @@ dependencies {
 	//Swagger 문서
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
 	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.15'
-  
+
+	// Google Cloud Storage
+	implementation group: 'com.google.cloud', name: 'google-cloud-storage', version: '2.27.1'
+
 }
 
 dependencyManagement {

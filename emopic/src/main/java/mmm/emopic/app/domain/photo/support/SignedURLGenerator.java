@@ -22,7 +22,7 @@ public class SignedURLGenerator {
     @Value("${gcp.project.id}")
     private String projectId;
     @Value("${gcp.project.bucket.name}")
-    private String buckedName;
+    private String bucketName;
     @Value("${gcp.project.bucket.key-path}")
     private String keyPath;
     @Value("${gcp.project.bucket.ttl}")
@@ -32,7 +32,7 @@ public class SignedURLGenerator {
                 .setProjectId(projectId)
                 .build()
                 .getService();
-        BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(buckedName,objectName)).build();
+        BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName,objectName)).build();
 
         URL url = storage.signUrl(blobInfo,duration, TimeUnit.MINUTES,Storage.SignUrlOption.withV4Signature(),
                 Storage.SignUrlOption.signWith(ServiceAccountCredentials.fromStream(new FileInputStream(keyPath))));
@@ -44,7 +44,7 @@ public class SignedURLGenerator {
                 .setProjectId(projectId)
                 .build()
                 .getService();
-        BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(buckedName,objectName)).build();
+        BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName,objectName)).build();
 
         Map<String, String> extensionHeaders = new HashMap<>();
         extensionHeaders.put("Content-Type", "image/jpeg");

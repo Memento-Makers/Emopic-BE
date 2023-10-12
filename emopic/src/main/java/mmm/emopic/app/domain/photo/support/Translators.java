@@ -32,13 +32,20 @@ public class Translators {
     @Value("${PAPAGO_AUTH_KEY}")
     private String papagoAuthkey;
 
-    public String deeplTranslate(String requiredTranslateText) throws Exception{
+    public String deeplTranslate(String requiredTranslateText){
         translator = new Translator(deeplAuthKey);
-        TextResult result = translator.translateText(requiredTranslateText,"EN" , "KO");
+        TextResult result = null;
+        try {
+            result = translator.translateText(requiredTranslateText,"EN" , "KO");
+        } catch (DeepLException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return result.getText();
     }
 
-    public String papagoTranslate(String requiredTranslateText) throws Exception{
+    public String papagoTranslate(String requiredTranslateText){
         String apiURL = "https://openapi.naver.com/v1/papago/n2mt";
 
         try {

@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE}
+      max-request-size: ${MAX_REQUEST_SIZE}
   mvc:
     converters:
       preferred-json-mapper: gson
@@ -73,3 +77,6 @@ swagger:
 
 cors:
   list : ${CORS_LIST}
+
+scheduler:
+  cron: ${SCHEDULE}
