@@ -19,10 +19,6 @@ public class Emotion{
 
     private String name;
 
-    /*
-    @OneToMany(mappedBy = "emotion", cascade = CascadeType.PERSIST)
-    private List<UserEmotion> userEmotions = new ArrayList<>();
-    */
     @Builder
     Emotion(Long id, String name){
         this.id = id;

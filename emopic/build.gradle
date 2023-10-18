@@ -86,6 +86,12 @@ dependencies {
 	// Google Cloud Storage
 	implementation group: 'com.google.cloud', name: 'google-cloud-storage', version: '2.27.1'
 
+	//Meta data extractor
+	implementation group: 'com.drewnoakes', name: 'metadata-extractor', version: '2.18.0'
+
+	//공간 관련 데이터 및 검색 특화
+	implementation 'org.hibernate:hibernate-spatial'
+
 }
 
 dependencyManagement {
