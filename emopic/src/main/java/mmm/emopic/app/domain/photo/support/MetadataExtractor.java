@@ -3,6 +3,7 @@ package mmm.emopic.app.domain.photo.support;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import org.locationtech.jts.geom.Coordinate;
@@ -20,9 +21,17 @@ import java.util.Optional;
 public class MetadataExtractor {
 
     public Optional<Date> getSnappedDate(Metadata metadata){
+        if(metadata.containsDirectoryOfType(ExifIFD0Directory.class)){
+            ExifIFD0Directory exif = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+            if(exif.containsTag(306)){
+                return Optional.of(exif.getDate(306));
+            }
+        }
         if(metadata.containsDirectoryOfType(ExifSubIFDDirectory.class)) {
-            ExifSubIFDDirectory exif = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-            return Optional.of(exif.getDateOriginal());
+            ExifSubIFDDirectory subExif = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+            if(subExif.containsTag(306)){
+                return Optional.of(subExif.getDate(306));
+            }
         }
         return Optional.empty();
     }

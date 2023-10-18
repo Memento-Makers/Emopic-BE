@@ -1,6 +1,7 @@
 package mmm.emopic.app.domain.photo;
 
 
+import com.drew.metadata.Metadata;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.domain.category.Category;
 import mmm.emopic.app.domain.category.dto.response.CategoryResponse;
@@ -13,12 +14,15 @@ import mmm.emopic.app.domain.emotion.Emotion;
 import mmm.emopic.app.domain.emotion.repository.EmotionRepository;
 import mmm.emopic.app.domain.emotion.PhotoEmotion;
 import mmm.emopic.app.domain.emotion.repository.PhotoEmotionRepository;
+import mmm.emopic.app.domain.location.Location;
+import mmm.emopic.app.domain.location.LocationRepository;
 import mmm.emopic.app.domain.photo.dto.response.*;
 import mmm.emopic.app.domain.photo.dto.request.PhotoUploadRequest;
 import mmm.emopic.app.domain.photo.repository.PhotoRepository;
 import mmm.emopic.app.domain.photo.repository.PhotoRepositoryCustom;
 import mmm.emopic.app.domain.photo.support.*;
 import mmm.emopic.exception.ResourceNotFoundException;
+import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -31,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,13 +53,19 @@ public class PhotoService {
     private final PhotoRepositoryCustom photoRepositoryCustom;
     private final PhotoInferenceWithAI photoInferenceWithAI;
     private final Translators translators;
-
     private final ImageUploader imageUploader;
+
+    private final MetadataExtractor metadataExtractor;
+    private final LocationRepository locationRepository;
+    private final KakaoMapAPI kakaoMapAPI;
+
     @Value("${DURATION}")
     private long duration;
 
 
-    // 이미지 업로드 후 signed_url 반환하는 함수
+    /**
+     * */
+
     @Transactional
     public PhotoUploadResponse createPhoto(PhotoUploadRequest photoUploadRequest) {
 
@@ -76,7 +87,7 @@ public class PhotoService {
         // 캡션 요청하기
         String caption = requestCaption(signedUrl);
 
-        // photo 객체 만들어서 저장하기
+        // photo 객체 만들기
         Photo photo = Photo.builder()
                 .name(fileName)
                 .caption(caption)
@@ -86,7 +97,50 @@ public class PhotoService {
                 .tbSignedUrlExpireTime(thumbnailSignedUrlExpiredTime)
                 .build();
 
+
+        // 메타데이터 추출하기
+        Optional<Metadata> metadata = metadataExtractor.readMetadata(photoUploadRequest.getImage());
+
+        boolean exists_gps_info = false;
+
+        Location location = null;
+
+
+        // 저장하기
         Photo savedPhoto = photoRepository.save(photo);
+
+        if(metadata.isPresent()){
+            Optional<Point> point = metadataExtractor.getLocationPoint(metadata.get());
+            if(point.isPresent()){ // GPS 정보 있으면 추출
+                Optional<KakaoCoord2regionResponse> LocationInfo = kakaoMapAPI.getLocationInfo(point.get());
+                if(LocationInfo.isPresent()){
+                    KakaoCoord2regionResponse info = LocationInfo.get();
+                    exists_gps_info = true;
+                    location = Location.builder()
+                            .full_address(info.getAddress_name())
+                            .address_1depth(info.getRegion_1depth_name())
+                            .address_2depth(info.getRegion_2depth_name())
+                            .address_3depth(info.getRegion_3depth_name())
+                            .address_4depth(info.getRegion_4depth_name())
+                            .longitude(point.get().getX())
+                            .latitude(point.get().getY())
+                            .photoId(savedPhoto.getId())
+                            .build();
+                }
+            }
+            Optional<Date> snappedDate = metadataExtractor.getSnappedDate(metadata.get());
+            if(snappedDate.isPresent()){ // 날짜 정보가 있으면 추출
+                photo.createSnappedAt(snappedDate.get());
+            }
+            else{
+                photo.createSnappedAt(new Date());
+            }
+        }
+
+        if(exists_gps_info){//위치 정보가 있으면 저장
+            Location saved = locationRepository.save(location);
+            photo.createLocation(saved);
+        }
 
         // caption 내용 일기장에 저장하기
         Diary diary = Diary.builder().photo(savedPhoto).content(caption).build();
