@@ -33,7 +33,7 @@ public class MetadataExtractor {
             if(gps.containsTag(GpsDirectory.TAG_LATITUDE) && gps.containsTag(GpsDirectory.TAG_LONGITUDE)){
                 //지리적 위치 데이터를 저장하는 데 사용되는 표준 좌표계 중 하나인 WGS84(World Geodetic System 1984)를 기반으로 하는 모델
                 GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-                return Optional.of(geometryFactory.createPoint(new Coordinate(gps.getGeoLocation().getLatitude(),gps.getGeoLocation().getLongitude())));
+                return Optional.of(geometryFactory.createPoint(new Coordinate(gps.getGeoLocation().getLongitude(),gps.getGeoLocation().getLatitude())));
             }
         }
         return Optional.empty();
