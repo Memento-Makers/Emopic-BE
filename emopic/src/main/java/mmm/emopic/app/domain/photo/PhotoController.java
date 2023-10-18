@@ -66,7 +66,7 @@ public class PhotoController {
     @Operation(summary = "전체 사진 조회", responses = {
             @ApiResponse(responseCode = "200", description = "전체 사진 조회 성공", content = @Content(schema = @Schema(implementation = PhotoInformationResponse.class)))
     })
-    public ResponseEntity<BaseResponse> getPhotosInformation(@PageableDefault(page = 0, size = 10, sort="snapped_at",direction = Sort.Direction.DESC) Pageable pageable){
+    public ResponseEntity<BaseResponse> getPhotosInformation(@PageableDefault(page = 0, size = 20, sort="snapped_at",direction = Sort.Direction.DESC) Pageable pageable){
         PageResponse response = photoService.getPhotosInformation(pageable);
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "전체 사진 조회 성공", response));
     }
