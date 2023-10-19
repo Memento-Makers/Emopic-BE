@@ -68,6 +68,9 @@ public class PhotoService {
 
     @Transactional
     public PhotoUploadResponse createPhoto(PhotoUploadRequest photoUploadRequest) {
+        if(!photoUploadRequest.getImage().getContentType().startsWith("image/")){
+            throw new RuntimeException("이미지 파일이 아닙니다");
+        }
         Long userId = 1L;
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));		//한국시간
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
