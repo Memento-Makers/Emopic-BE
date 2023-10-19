@@ -25,4 +25,10 @@ public class LocationService {
         List<Photo> response = photoRepositoryCustom.findAllByLocationYN();
         return response.stream().map(photo -> new LocationPhotoResponse(photo)).collect(Collectors.toList());
     }
+    public LocationRecentResponse getCityAndPhoto() {
+
+        Photo photo = photoRepositoryCustom.findRecentPhoto().orElseThrow(() -> new RuntimeException("저장된 사진이 없습니다"));
+
+        return new LocationRecentResponse(photo);
+    }
 }
