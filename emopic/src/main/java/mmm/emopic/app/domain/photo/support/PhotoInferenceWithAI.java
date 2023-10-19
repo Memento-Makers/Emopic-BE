@@ -20,7 +20,6 @@ public class PhotoInferenceWithAI {
     @Value("${ai-url}")
     private String inferenceUrl;
     public Optional<CategoryInferenceResponse> getClassificationsByPhoto(String signedUrl) {
-        List<String> result= new ArrayList<>();
 
         String requestUrl = inferenceUrl+"classification";
 
@@ -38,7 +37,6 @@ public class PhotoInferenceWithAI {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        CategoryInferenceResponse categoryInferenceResponse = null;
         try {
             return Optional.of(mapper.readValue(response, CategoryInferenceResponse.class));
         } catch (JsonProcessingException e) {

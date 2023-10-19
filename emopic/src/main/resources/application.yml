@@ -80,3 +80,9 @@ cors:
 
 scheduler:
   cron: ${SCHEDULE}
+
+kakao:
+  api:
+    key: ${KAKAO_REST_API_KEY}
+    geo:
+      coord2regioncode: ${KAKAO_COORD_TO_REGION_URL}

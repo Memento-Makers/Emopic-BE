@@ -28,7 +28,8 @@ public class ImageUploader {
             GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(keyPath));
             Storage storage = StorageOptions.newBuilder().setProjectId(projectId).setCredentials(credentials).build().getService();
             BlobId blobId = BlobId.of(bucketName, objectName);
-            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+            BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                    .setContentType("image/jpeg").build();
             storage.create(blobInfo,image.getBytes());
             System.out.println(
                     "File uploaded to bucket " + bucketName + " as " + objectName);

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ import java.util.List;
 public class PhotoController {
     private final PhotoService photoService;
 
-    @PostMapping("/photos")
+    @PostMapping(value = "/photos" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "이미지 업로드", description = "이미지 업로드 요청", responses = {
             @ApiResponse(responseCode = "201", description = "이미지 업로드 성공", content = @Content(schema = @Schema(implementation = PhotoUploadResponse.class)))
     })
@@ -65,7 +66,7 @@ public class PhotoController {
     @Operation(summary = "전체 사진 조회", responses = {
             @ApiResponse(responseCode = "200", description = "전체 사진 조회 성공", content = @Content(schema = @Schema(implementation = PhotoInformationResponse.class)))
     })
-    public ResponseEntity<BaseResponse> getPhotosInformation(@PageableDefault(page = 0, size = 10, sort="snapped_at",direction = Sort.Direction.DESC) Pageable pageable){
+    public ResponseEntity<BaseResponse> getPhotosInformation(@PageableDefault(page = 0, size = 20, sort="snapped_at",direction = Sort.Direction.DESC) Pageable pageable){
         PageResponse response = photoService.getPhotosInformation(pageable);
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "전체 사진 조회 성공", response));
     }
