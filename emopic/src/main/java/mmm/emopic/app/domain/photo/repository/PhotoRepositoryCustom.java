@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PhotoRepositoryCustom {
     Page<Photo> findByCategoryId(Long categoryId, Pageable pageable);
@@ -13,4 +14,5 @@ public interface PhotoRepositoryCustom {
     Page<Photo> findAllPhotos(Pageable pageable);
     List<Photo> findAllByExpiredTime();
     List<Photo> findAllByLocationYN();
+    Optional<Photo> findRecentPhoto();
 }
