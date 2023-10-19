@@ -44,6 +44,16 @@ public class LocationController {
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "지도 전체 사진 조회 완료", response));
     }
 
+
+    @GetMapping("/locations/points")
+    @Operation(summary = "현재 위치에 따른 사진 정보 조회", responses = {
+            @ApiResponse(responseCode = "200", description = "현재 위치에 따른 사진 정보 조회 완료", content = @Content(schema = @Schema(implementation = LocationPhotoResponse.class)))
+    })
+    public ResponseEntity<BaseResponse> getRecentPhotoByPoints(@RequestParam double latitude, @RequestParam double longitude){
+        LocationPointResponse response = locationService.getCityAndCount(latitude,longitude);
+        return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "현재 위치에 따른 사진 정보 조회 완료", response));
+    }
+
     @GetMapping("/locations/recent")
     @Operation(summary = "가장 최근 업로드한 사진 위치정보 조회", responses = {
             @ApiResponse(responseCode = "200", description = "가장 최근 업로드한 사진 위치정보 조회 완료", content = @Content(schema = @Schema(implementation = LocationPhotoResponse.class)))

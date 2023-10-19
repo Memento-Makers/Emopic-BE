@@ -8,6 +8,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import mmm.emopic.app.domain.location.dto.response.LocationPointResponse;
 import mmm.emopic.app.domain.photo.Photo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -80,6 +81,30 @@ public class PhotoRepositoryCustomImpl implements PhotoRepositoryCustom {
                 .fetch();
         return queryResults;
     }
+
+    @Override
+    public Optional<LocationPointResponse> findRecentPhotoAndCountByCity(String city) {
+        Photo recentPhoto = queryFactory
+                .selectFrom(photo)
+                .where(
+                        eqExistsLocation().and(eqLocationCity(city)).and(eqNotDeleted())
+                )
+                .orderBy(makeOrder(makeSort("createDate")))
+                .fetchFirst();
+        JPQLQuery<Photo> result = queryFactory
+                .selectFrom(photo)
+                .where(
+                        eqExistsLocation().and(eqLocationCity(city)).and(eqNotDeleted())
+                );
+
+        Long count = result.fetchCount();
+
+        if(count.equals(0L)){
+            return Optional.empty();
+        }
+        return Optional.of(new LocationPointResponse(recentPhoto,count));
+    }
+
     @Override
     public Optional<Photo> findRecentPhoto() {
         Photo recentPhoto = queryFactory
@@ -114,7 +139,13 @@ public class PhotoRepositoryCustomImpl implements PhotoRepositoryCustom {
     }
 
     private BooleanExpression eqExistsLocation() {return photo.location_YN.isTrue();}
+
+    private BooleanExpression eqLocationCity(String city){
+        return photo.location.address_1depth.eq(city);
+    }
+
     private Sort makeSort(String properties){
         return Sort.by(Sort.Direction.DESC,properties);
     }
+
 }
