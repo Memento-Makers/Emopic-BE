@@ -72,6 +72,14 @@ public class PhotoRepositoryCustomImpl implements PhotoRepositoryCustom {
     }
 
     private OrderSpecifier[] makeSort(Sort sort) {
+    @Override
+    public List<Photo> findAllByLocationYN() {
+        List<Photo> queryResults = queryFactory
+                .selectFrom(photo)
+                .where(eqExistsLocation().and(eqNotDeleted()))
+                .fetch();
+        return queryResults;
+    }
         List<OrderSpecifier> orders = new ArrayList<>();
 
         for(Sort.Order order : sort) {

@@ -12,4 +12,5 @@ public interface PhotoRepositoryCustom {
 
     Page<Photo> findAllPhotos(Pageable pageable);
     List<Photo> findAllByExpiredTime();
+    List<Photo> findAllByLocationYN();
 }
