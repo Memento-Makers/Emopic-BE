@@ -19,11 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-
-import java.net.URISyntaxException;
-import java.util.List;
-
 //Swagger
 @Tag(name="사진 API")
 

@@ -68,7 +68,9 @@ public class PhotoService {
 
     @Transactional
     public PhotoUploadResponse createPhoto(PhotoUploadRequest photoUploadRequest) {
-
+        if(!photoUploadRequest.getImage().getContentType().startsWith("image/")){
+            throw new RuntimeException("이미지 파일이 아닙니다");
+        }
         Long userId = 1L;
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));		//한국시간
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
@@ -112,9 +114,9 @@ public class PhotoService {
         if(metadata.isPresent()){
             Optional<Point> point = metadataExtractor.getLocationPoint(metadata.get());
             if(point.isPresent()){ // GPS 정보 있으면 추출
-                Optional<KakaoCoord2regionResponse> LocationInfo = kakaoMapAPI.getLocationInfo(point.get());
+                Optional<KakaoCoord2regionResponse> LocationInfo = kakaoMapAPI.getLocationInfo(point.get().getX(),point.get().getY());
                 if(LocationInfo.isPresent()){
-                    KakaoCoord2regionResponse info = LocationInfo.get();
+                    KakaoCoord2regionResponse info = LocationInfo.orElseThrow(() -> new RuntimeException("Kakao Map api 사용 도중 에러가 발생했습니다"));
                     exists_gps_info = true;
                     location = Location.builder()
                             .full_address(info.getAddress_name())
@@ -122,8 +124,8 @@ public class PhotoService {
                             .address_2depth(info.getRegion_2depth_name())
                             .address_3depth(info.getRegion_3depth_name())
                             .address_4depth(info.getRegion_4depth_name())
-                            .longitude(point.get().getX())
-                            .latitude(point.get().getY())
+                            .latitude(point.get().getX())
+                            .longitude(point.get().getY())
                             .photoId(savedPhoto.getId())
                             .build();
                 }

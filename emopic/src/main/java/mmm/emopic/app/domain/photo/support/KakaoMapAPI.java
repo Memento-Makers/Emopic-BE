@@ -24,10 +24,10 @@ public class KakaoMapAPI {
     private String apiKey;
 
     @Value("${kakao.api.geo.coord2regioncode}")
-    private String requestUrl;
+    private String rootUrl;
 
-    public Optional<KakaoCoord2regionResponse> getLocationInfo(Point point){
-        requestUrl = String.format("%s.json?x=%s&y=%s",requestUrl,point.getX(),point.getY());
+    public Optional<KakaoCoord2regionResponse> getLocationInfo(double latitude, double longitude){
+         String requestUrl = String.format("%s.json?x=%s&y=%s",rootUrl,longitude,latitude);
         System.out.println(requestUrl);
 
         StringBuffer response = new StringBuffer();

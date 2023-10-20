@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -30,16 +31,17 @@ public class PhotoInferenceWithAI {
         headers.add("accept", "text/plain;charset=UTF-8");
         HttpEntity<Map<String, String>> request = new HttpEntity<>(parameters, headers);
 
+        try{
+            RestTemplate rt = new RestTemplate();
+            String response = rt.postForObject(requestUrl, request, String.class);
+            ObjectMapper mapper = new ObjectMapper();
 
-        RestTemplate rt = new RestTemplate();
-
-        String response = rt.postForObject(requestUrl, request, String.class);
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
             return Optional.of(mapper.readValue(response, CategoryInferenceResponse.class));
-        } catch (JsonProcessingException e) {
+        }
+        catch (HttpServerErrorException e){
+            return Optional.empty();
+        }
+        catch (JsonProcessingException e) {
             return Optional.empty();
         }
     }
@@ -56,15 +58,19 @@ public class PhotoInferenceWithAI {
         HttpEntity<Map<String, String>> request = new HttpEntity<>(parameters, headers);
 
 
-        RestTemplate rt = new RestTemplate();
-
-        String response = rt.postForObject(requestUrl, request, String.class);
-
-        ObjectMapper mapper = new ObjectMapper();
-
         try {
+            RestTemplate rt = new RestTemplate();
+
+            String response = rt.postForObject(requestUrl, request, String.class);
+
+            ObjectMapper mapper = new ObjectMapper();
+
             return Optional.of(mapper.readValue(response, CaptionInferenceResponse.class));
-        } catch (JsonProcessingException e) {
+        }
+        catch (HttpServerErrorException e){
+            return Optional.empty();
+        }
+        catch (JsonProcessingException e) {
             return Optional.empty();
         }
     }
