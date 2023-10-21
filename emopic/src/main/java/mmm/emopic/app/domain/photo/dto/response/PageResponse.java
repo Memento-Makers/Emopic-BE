@@ -1,16 +1,13 @@
 package mmm.emopic.app.domain.photo.dto.response;
 
 import lombok.Data;
-import lombok.Getter;
-import mmm.emopic.app.domain.photo.Photo;
 import org.springframework.data.domain.Page;
 
 import java.util.Collections;
-import java.util.List;
 
 @Data
 public class PageResponse {
-    private List<Object> content;
+    private Object content;
 
     private long totalElements;
     private int totalPage;
@@ -23,7 +20,7 @@ public class PageResponse {
         this.currentPage = result.getNumber();
         this.totalPage = result.getTotalPages();
         this.last = result.isLast();
-        this.content = Collections.singletonList(result.getContent());
+        this.content = result.getContent();
         this.numberOfElements = result.getNumberOfElements();
         this.totalElements = result.getTotalElements();
         this.empty = result.isEmpty();
