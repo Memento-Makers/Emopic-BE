@@ -7,6 +7,7 @@
 
 ## 프로젝트 구조
 ![image](https://github.com/Memento-Makers/Emopic-BE/assets/38587274/030cc919-19cd-49ab-be72-14f8165a780c)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FMemento-Makers%2FEmopic-BE.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FMemento-Makers%2FEmopic-BE?ref=badge_shield)
 
 ## 팀원 소개
 <div align="center">
@@ -88,3 +89,7 @@
 ## API 명세
 [Swagger API 명세](https://test.emopic.shop/swagger-ui/index.html)
 ![화면 캡처 2023-09-07 212846](https://github.com/Memento-Makers/Emopic-BE/assets/80192612/45fcbb3d-942c-4fe8-b41e-9f072e14f1a0)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FMemento-Makers%2FEmopic-BE.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FMemento-Makers%2FEmopic-BE?ref=badge_large)
