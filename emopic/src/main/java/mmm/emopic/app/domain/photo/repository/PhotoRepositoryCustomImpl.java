@@ -3,6 +3,7 @@ package mmm.emopic.app.domain.photo.repository;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import static mmm.emopic.app.domain.category.QPhotoCategory.photoCategory;
 import static mmm.emopic.app.domain.photo.QPhoto.photo;
+import static mmm.emopic.app.domain.location.QLocation.location;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -89,7 +91,7 @@ public class PhotoRepositoryCustomImpl implements PhotoRepositoryCustom {
                 .where(
                         eqExistsLocation().and(eqLocationCity(city)).and(eqNotDeleted())
                 )
-                .orderBy(makeOrder(makeSort("createDate")))
+                .orderBy(makeDescOrder("createDate"))
                 .fetchFirst();
         JPQLQuery<Photo> result = queryFactory
                 .selectFrom(photo)
@@ -112,12 +114,30 @@ public class PhotoRepositoryCustomImpl implements PhotoRepositoryCustom {
                 .where(
                         eqExistsLocation().and(eqNotDeleted())
                 )
-                .orderBy(makeOrder(makeSort("createDate")))
+                .orderBy(makeDescOrder("createDate"))
                 .fetchFirst();
         if(recentPhoto.equals(null)){
             return Optional.empty();
         }
         return Optional.of(recentPhoto);
+    }
+
+    @Override
+    public List<Photo> findPhotosGroupByCity() {
+        List<Photo> result = queryFactory
+                .selectFrom(photo)
+                .where(photo.id.in(
+                        JPAExpressions.select(location.photoId) //location 테이블 내에서 각 지역별로 가장 최근에 업로드된 사진 id를 가져오는 쿼리
+                                .from(location)
+                                .where(Expressions.list(location.address_1depth, location.createDate).in( // 각 지역별로 createDate 가 (가장 큰 = 가장 최근인) 지역정보, 업로드 날짜를 가져오는 쿼리
+                                        JPAExpressions.select(Expressions.list(location.address_1depth,location.createDate.max()))
+                                                .from(location)
+                                                .groupBy(location.address_1depth)
+                                                .where(eqLocationNotDeleted())
+                                        )
+                                )
+                )).fetch();
+        return result;
     }
 
     private OrderSpecifier[] makeOrder(Sort sort) {
@@ -138,14 +158,25 @@ public class PhotoRepositoryCustomImpl implements PhotoRepositoryCustom {
         return photo.deleted.isFalse();
     }
 
+    private BooleanExpression eqLocationNotDeleted(){
+        return location.deleted.isFalse();
+    }
+
     private BooleanExpression eqExistsLocation() {return photo.location_YN.isTrue();}
 
     private BooleanExpression eqLocationCity(String city){
         return photo.location.address_1depth.eq(city);
     }
 
-    private Sort makeSort(String properties){
-        return Sort.by(Sort.Direction.DESC,properties);
+
+    private OrderSpecifier[] makeDescOrder(String properties){
+        return makeOrder(makeSort(properties, Sort.Direction.DESC));
+    }
+    private OrderSpecifier[] makeAscOrder(String properties){
+        return makeOrder(makeSort(properties, Sort.Direction.ASC));
+    }
+    private Sort makeSort(String properties, Sort.Direction direction){
+        return Sort.by(direction,properties);
     }
 
 }
