@@ -4,16 +4,13 @@ import lombok.Getter;
 import mmm.emopic.app.domain.photo.Photo;
 
 @Getter
-public class LocationPointResponse {
+public class LocationPointResponse extends CityResponse{
     private Long photoId;
-    private String thumbnailUrl;
     private Long count;
-    private String city;
 
     public LocationPointResponse(Photo photo, Long count) {
+        super(photo);
         this.photoId = photo.getId();
-        this.thumbnailUrl = photo.getTbSignedUrl();
         this.count = count;
-        this.city = photo.getLocation().getAddress_1depth();
     }
 }

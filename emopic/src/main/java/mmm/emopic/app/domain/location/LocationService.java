@@ -1,6 +1,7 @@
 package mmm.emopic.app.domain.location;
 
 import lombok.RequiredArgsConstructor;
+import mmm.emopic.app.domain.location.dto.response.CityResponse;
 import mmm.emopic.app.domain.location.dto.response.LocationPhotoResponse;
 import mmm.emopic.app.domain.location.dto.response.LocationPointResponse;
 import mmm.emopic.app.domain.location.dto.response.LocationRecentResponse;
@@ -24,8 +25,8 @@ public class LocationService {
 
     private final KakaoMapAPI kakaoMapAPI;
     public List<LocationPhotoResponse> getAllPhotos() {
-        List<Photo> response = photoRepositoryCustom.findAllByLocationYN();
-        return response.stream().map(photo -> new LocationPhotoResponse(photo)).collect(Collectors.toList());
+        List<Photo> result = photoRepositoryCustom.findAllByLocationYN();
+        return result.stream().map(photo -> new LocationPhotoResponse(photo)).collect(Collectors.toList());
     }
 
     public LocationPointResponse getCityAndCount(double latitude, double longitude) {
@@ -42,5 +43,11 @@ public class LocationService {
         Photo photo = photoRepositoryCustom.findRecentPhoto().orElseThrow(() -> new RuntimeException("저장된 사진이 없습니다"));
 
         return new LocationRecentResponse(photo);
+    }
+
+    public List<CityResponse> getPhotoByCity() {
+
+        List<Photo> result = photoRepositoryCustom.findPhotosGroupByCity();
+        return result.stream().map(photo -> new CityResponse(photo)).collect(Collectors.toList());
     }
 }
