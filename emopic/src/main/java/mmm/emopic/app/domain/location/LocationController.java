@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.base.Dto.BaseResponse;
+import mmm.emopic.app.domain.location.dto.response.CityResponse;
 import mmm.emopic.app.domain.location.dto.response.LocationPhotoResponse;
 import mmm.emopic.app.domain.location.dto.response.LocationPointResponse;
 import mmm.emopic.app.domain.location.dto.response.LocationRecentResponse;
@@ -47,7 +48,7 @@ public class LocationController {
 
     @GetMapping("/locations/points")
     @Operation(summary = "현재 위치에 따른 사진 정보 조회", responses = {
-            @ApiResponse(responseCode = "200", description = "현재 위치에 따른 사진 정보 조회 완료", content = @Content(schema = @Schema(implementation = LocationPhotoResponse.class)))
+            @ApiResponse(responseCode = "200", description = "현재 위치에 따른 사진 정보 조회 완료", content = @Content(schema = @Schema(implementation = LocationPointResponse.class)))
     })
     public ResponseEntity<BaseResponse> getRecentPhotoByPoints(@RequestParam double latitude, @RequestParam double longitude){
         LocationPointResponse response = locationService.getCityAndCount(latitude,longitude);
@@ -56,10 +57,20 @@ public class LocationController {
 
     @GetMapping("/locations/recent")
     @Operation(summary = "가장 최근 업로드한 사진 위치정보 조회", responses = {
-            @ApiResponse(responseCode = "200", description = "가장 최근 업로드한 사진 위치정보 조회 완료", content = @Content(schema = @Schema(implementation = LocationPhotoResponse.class)))
+            @ApiResponse(responseCode = "200", description = "가장 최근 업로드한 사진 위치정보 조회 완료", content = @Content(schema = @Schema(implementation = LocationRecentResponse.class)))
     })
     public ResponseEntity<BaseResponse> getRecentPhotoAndCity(){
         LocationRecentResponse response = locationService.getCityAndPhoto();
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "가장 최근 업로드한 사진 위치정보 조회 완료", response));
     }
+
+    @GetMapping("/locations/city")
+    @Operation(summary = "지역별 대표 사진 조회", responses = {
+            @ApiResponse(responseCode = "200", description = "지역별 대표 사진 조회 완료", content = @Content(schema = @Schema(implementation = CityResponse.class)))
+    })
+    public ResponseEntity<BaseResponse> getPhotoByCity(){
+        List<CityResponse> response = locationService.getPhotoByCity();
+        return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "지역별 대표 사진 조회 완료", response));
+    }
+
 }

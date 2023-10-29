@@ -18,4 +18,6 @@ public interface PhotoRepositoryCustom {
     Optional<LocationPointResponse> findRecentPhotoAndCountByCity(String city);
 
     Optional<Photo> findRecentPhoto();
+
+    List<Photo> findPhotosGroupByCity();
 }
