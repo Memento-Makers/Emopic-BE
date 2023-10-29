@@ -14,23 +14,28 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Optional;
+import java.util.TimeZone;
 
 @Configuration
 public class MetadataExtractor {
 
-    public Optional<Date> getSnappedDate(Metadata metadata){
+    public Optional<LocalDateTime> getSnappedDate(Metadata metadata){
         if(metadata.containsDirectoryOfType(ExifIFD0Directory.class)){
             ExifIFD0Directory exif = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
             if(exif.containsTag(306)){
-                return Optional.of(exif.getDate(306));
+                LocalDateTime date = LocalDateTime.parse(exif.getString(306), DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss"));
+                return Optional.of(date);
             }
         }
         if(metadata.containsDirectoryOfType(ExifSubIFDDirectory.class)) {
             ExifSubIFDDirectory subExif = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
             if(subExif.containsTag(306)){
-                return Optional.of(subExif.getDate(306));
+                LocalDateTime date = LocalDateTime.parse(subExif.getString(306), DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss"));
+                return Optional.of(date);
             }
         }
         return Optional.empty();

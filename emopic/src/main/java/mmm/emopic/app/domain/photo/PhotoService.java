@@ -106,40 +106,41 @@ public class PhotoService {
         boolean exists_gps_info = false;
 
         Location location = null;
+        Optional<Point> point = null;
 
-
-        // 저장하기
-        Photo savedPhoto = photoRepository.save(photo);
-
+        KakaoCoord2regionResponse info = null;
         if(metadata.isPresent()){
-            Optional<Point> point = metadataExtractor.getLocationPoint(metadata.get());
+            point = metadataExtractor.getLocationPoint(metadata.get());
             if(point.isPresent()){ // GPS 정보 있으면 추출
                 Optional<KakaoCoord2regionResponse> LocationInfo = kakaoMapAPI.getLocationInfo(point.get().getX(),point.get().getY());
                 if(LocationInfo.isPresent()){
-                    KakaoCoord2regionResponse info = LocationInfo.orElseThrow(() -> new RuntimeException("Kakao Map api 사용 도중 에러가 발생했습니다"));
+                    info = LocationInfo.orElseThrow(() -> new RuntimeException("Kakao Map api 사용 도중 에러가 발생했습니다"));
                     exists_gps_info = true;
-                    location = Location.builder()
-                            .full_address(info.getAddress_name())
-                            .address_1depth(info.getRegion_1depth_name())
-                            .address_2depth(info.getRegion_2depth_name())
-                            .address_3depth(info.getRegion_3depth_name())
-                            .address_4depth(info.getRegion_4depth_name())
-                            .latitude(point.get().getX())
-                            .longitude(point.get().getY())
-                            .photoId(savedPhoto.getId())
-                            .build();
                 }
             }
-            Optional<Date> snappedDate = metadataExtractor.getSnappedDate(metadata.get());
+            Optional<LocalDateTime> snappedDate = metadataExtractor.getSnappedDate(metadata.get());
             if(snappedDate.isPresent()){ // 날짜 정보가 있으면 추출
                 photo.createSnappedAt(snappedDate.get());
             }
             else{
-                photo.createSnappedAt(new Date());
+                photo.createSnappedAt(LocalDateTime.now());
             }
         }
 
+        // 저장하기
+        Photo savedPhoto = photoRepository.save(photo);
+
         if(exists_gps_info){//위치 정보가 있으면 저장
+            location = Location.builder()
+                    .full_address(info.getAddress_name())
+                    .address_1depth(info.getRegion_1depth_name())
+                    .address_2depth(info.getRegion_2depth_name())
+                    .address_3depth(info.getRegion_3depth_name())
+                    .address_4depth(info.getRegion_4depth_name())
+                    .latitude(point.get().getX())
+                    .longitude(point.get().getY())
+                    .photoId(savedPhoto.getId())
+                    .build();
             Location saved = locationRepository.save(location);
             photo.createLocation(saved);
         }
