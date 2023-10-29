@@ -72,5 +72,12 @@ public class LocationController {
         List<CityResponse> response = locationService.getPhotoByCity();
         return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), "지역별 대표 사진 조회 완료", response));
     }
-
+    @GetMapping("/locations/city/photos")
+    @Operation(summary = "지역의 전체 사진 조회", responses = {
+            @ApiResponse(responseCode = "200", description = "지역의 전체 사진 조회 완료", content = @Content(schema = @Schema(implementation = PageResponse.class)))
+    })
+    public ResponseEntity<BaseResponse> getAllPhotoOfCity(@Param("city") String city, @PageableDefault(page = 0, size = 20, sort="snapped_at",direction = Sort.Direction.DESC) Pageable pageable){
+        PageResponse response = locationService.getAllPhotosByCity(city,pageable);
+        return ResponseEntity.ok(new BaseResponse( HttpStatus.OK.value(), String.format("%s의 전체 사진 조회 완료",city), response));
+    }
 }

@@ -140,6 +140,28 @@ public class PhotoRepositoryCustomImpl implements PhotoRepositoryCustom {
         return result;
     }
 
+    @Override
+    public Page<Photo> findAllPhotosByCity(String city, Pageable pageable) {
+
+        List<Photo> queryResults = queryFactory
+                .selectFrom(photo)
+                .where(
+                        eqLocationCity(city)
+                )
+                .orderBy(makeOrder(pageable.getSort()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+        JPQLQuery<Photo> count = queryFactory
+                .select(photo)
+                .from(photo)
+                .where(
+                        eqLocationCity(city)
+                );
+
+        return PageableExecutionUtils.getPage(queryResults,pageable,() -> count.fetchCount());
+    }
+
     private OrderSpecifier[] makeOrder(Sort sort) {
         List<OrderSpecifier> orders = new ArrayList<>();
 
@@ -178,5 +200,4 @@ public class PhotoRepositoryCustomImpl implements PhotoRepositoryCustom {
     private Sort makeSort(String properties, Sort.Direction direction){
         return Sort.by(direction,properties);
     }
-
 }

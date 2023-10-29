@@ -20,4 +20,6 @@ public interface PhotoRepositoryCustom {
     Optional<Photo> findRecentPhoto();
 
     List<Photo> findPhotosGroupByCity();
+
+    Page<Photo> findAllPhotosByCity(String city, Pageable pageable);
 }
