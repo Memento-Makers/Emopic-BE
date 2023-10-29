@@ -164,11 +164,7 @@ public class PhotoService {
 
         CategoryInferenceResponse categoryInferenceResponse = photoInferenceWithAI.getClassificationsByPhoto(photo.getSignedUrl()).orElseThrow(() -> new RuntimeException("classification 과정에서 오류 발생"));
 
-        List<String> requiredTranslateResult = categoryInferenceResponse.getCategories();
-        List<String> result = new ArrayList<>();
-        for(String translateText :requiredTranslateResult){
-            result.add(translators.papagoTranslate(translateText));
-        }
+        List<String> result = categoryInferenceResponse.getCategories();
         for(String categoryName : result){
             Category category = categoryRepository.findByName(categoryName).orElseGet(() -> createCategory(categoryName));
             PhotoCategory photoCategory = PhotoCategory.builder().photo(photo).category(category).build();
