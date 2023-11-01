@@ -1,5 +1,6 @@
 package mmm.emopic.app.domain.photo.dto.response;
 
+import lombok.Getter;
 import mmm.emopic.app.domain.category.Category;
 import mmm.emopic.app.domain.diary.Diary;
 import mmm.emopic.app.domain.emotion.Emotion;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Getter
 public class PhotosInformationResponse {
     private Long photoId;
 
