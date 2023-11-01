@@ -1,5 +1,6 @@
 package mmm.emopic.app.domain.photo.dto.response;
 
+import lombok.Builder;
 import lombok.Getter;
 import mmm.emopic.app.domain.category.Category;
 import mmm.emopic.app.domain.category.PhotoCategory;
@@ -24,6 +25,8 @@ public class PhotoInformationResponse {
 
     private String signedUrl;
 
+    private String caption;
+
     private String uploadDateTime;
 
     private Long diaryId;
@@ -40,6 +43,7 @@ public class PhotoInformationResponse {
         this.photoId = photo.getId();
         this.signedUrl = photo.getSignedUrl();
         this.diaryId = diary.getId();
+        this.caption = photo.getCaption();
         Optional<String> optionDiaryContent = Optional.ofNullable(diary.getContent());
         if(optionDiaryContent.isPresent()){
             this.diaryContent = diary.getContent();

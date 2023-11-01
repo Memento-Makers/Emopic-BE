@@ -62,8 +62,8 @@ public class Photo extends BaseEntity {
         this.location = location;
     }
 
-    public void createSnappedAt(Date date){
-        this.snapped_at = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+    public void createSnappedAt(LocalDateTime date){
+        this.snapped_at = date;
     }
 
     public void createLocation(Location location){
