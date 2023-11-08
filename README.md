@@ -1,5 +1,5 @@
 # Emopic-BE
-Emopic-BE 저장소에는 Emopic 프로젝트에 사용에서 주요 데이터에 대한 CRUD 기능을 하는 코드가 작성되어 있습니다. 
+Emopic-BE 저장소에는 Emopic 프로젝트에 사용에서 주요 데이터에 대한 CRUD 기능을 하는 코드와 클라우드에서 썸네일을 만드는 코드가 저장되어 있습니다. 
 
 ## Table Of content
 
@@ -28,6 +28,9 @@ Emopic-BE 저장소에는 Emopic 프로젝트에 사용에서 주요 데이터�
 ## 준비하기 
 - spring boot와 연결할 Database를 구성해주세요
 - Google Cloud Platform의 이미지 저장소를 만들고 credential.json 파일을 준비해 주세요
+- Google Cloud Function에 썸네일을 만드는 함수를 추가해주세요
+  - 이벤트 트리거는 위에서 만든 이미지 저장소의 google.cloud.storage.object.v1.finalized 로 설정해주세요
+  - 썸네일을 만드는 함수는 파이썬으로 작성되어 있습니다. [링크](CloudFunction)
 - Caption 결과 번역을 위해 DeepL key 혹은 papago key를 준비해주세요
 - GPS 정보로 시도군 정보를 받아오기 위해 KakaoMap API Key를 준비해주세요
 - AI 서버와 연결을 위해 [Emopic-AI 저장소](https://github.com/Memento-Makers/Emopic-AI.git)를 참고해 AI 서빙 서버를 구축해주세요
