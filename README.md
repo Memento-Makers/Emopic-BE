@@ -121,4 +121,4 @@ docker run --env-file .env -v credential.json:/key.json -p 8080:8080 -d <imagena
 ### API 명세
 [Swagger API 명세](https://dev.emopic.shop/swagger-ui/index.html)
 
-## [기여하기](emopic/docs/contribute.md)
+## [기여하기](docs/contribute.md)
