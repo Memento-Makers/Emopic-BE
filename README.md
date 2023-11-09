@@ -88,7 +88,7 @@ PAPAGO_AUTH_KEY=<>
 
 
 # 스케줄러 동작 -> 하루에 1번씩 예시
-SCHEDULE=0/0 0 0 1 * *
+SCHEDULE=0 0 0 1 * *
 
 #File upload max size
 MAX_FILE_SIZE = 20MB
