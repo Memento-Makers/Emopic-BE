@@ -1,5 +1,6 @@
 # Emopic-BE
 Emopic-BE 저장소에는 Emopic 프로젝트에 사용에서 주요 데이터에 대한 CRUD 기능을 하는 코드와 클라우드에서 썸네일을 만드는 코드가 저장되어 있습니다. 
+(현재 최신 코드는 stage branch에 존재합니다. 직접 실행하기 위해서는 해당 브랜치의 코드를 사용해주세요!)
 
 ## Table Of content
 
