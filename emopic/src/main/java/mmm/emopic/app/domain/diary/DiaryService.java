@@ -40,7 +40,10 @@ public class DiaryService {
 
     @Transactional
     public DiaryGetResponse getDiary(Long photoId) {
+        Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new ResourceNotFoundException("photo", photoId));
         Diary diary = diaryRepository.findByPhotoId(photoId).orElseThrow(() -> new ResourceNotFoundException("diary", photoId));
-        return new DiaryGetResponse(diary);
+        return DiaryGetResponse.builder()
+                .diary(diary.getContent())
+                .caption(photo.getCaption()).build();
     }
 }
