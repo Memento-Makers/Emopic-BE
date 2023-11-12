@@ -4,7 +4,6 @@ package mmm.emopic.app.domain.photo;
 import com.drew.metadata.Metadata;
 import lombok.RequiredArgsConstructor;
 import mmm.emopic.app.domain.category.Category;
-import mmm.emopic.app.domain.category.dto.response.CategoryResponse;
 import mmm.emopic.app.domain.category.repository.CategoryRepository;
 import mmm.emopic.app.domain.category.PhotoCategory;
 import mmm.emopic.app.domain.category.repository.PhotoCategoryRepository;
@@ -35,9 +34,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +53,6 @@ public class PhotoService {
     private final EmotionRepository emotionRepository;
     private final PhotoRepositoryCustom photoRepositoryCustom;
     private final PhotoInferenceWithAI photoInferenceWithAI;
-    private final Translators translators;
     private final ImageUploader imageUploader;
 
     private final MetadataExtractor metadataExtractor;
@@ -61,10 +61,6 @@ public class PhotoService {
 
     @Value("${DURATION}")
     private long duration;
-
-
-    /**
-     * */
 
     @Transactional
     public PhotoUploadResponse createPhoto(PhotoUploadRequest photoUploadRequest) {
@@ -76,8 +72,13 @@ public class PhotoService {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
 
         String fileName =  now.format(format) + userId.toString();
-        // 이미지 업로드
+
+
+        ExecutorService executorService = Executors.newCachedThreadPool();
+
+        // 이미지 업로드 -> 실패하면 사진 객체가 저장되면 안되므로 비동기 처리 하면 안됨.
         imageUploader.imageUpload(fileName, photoUploadRequest.getImage());
+
 
         // 다운로드용 signed_url 생성
         String signedUrl = getSignedUrl(fileName).orElseThrow(() -> new RuntimeException("create signed url error"));
@@ -86,29 +87,48 @@ public class PhotoService {
         LocalDateTime signedUrlExpiredTime = LocalDateTime.now().plusMinutes(duration);
         LocalDateTime thumbnailSignedUrlExpiredTime = LocalDateTime.now().plusMinutes(duration);
 
-        // 캡션 요청하기
-        String caption = requestCaption(signedUrl);
-
         // photo 객체 만들기
         Photo photo = Photo.builder()
                 .name(fileName)
-                .caption(caption)
                 .signedUrl(signedUrl)
                 .signedUrlExpireTime(signedUrlExpiredTime)
                 .tbSignedUrl(thumbnailSignedUrl)
                 .tbSignedUrlExpireTime(thumbnailSignedUrlExpiredTime)
                 .build();
 
+        // 저장하기
+        Photo savedPhoto = photoRepository.save(photo);
 
-        // 메타데이터 추출하기
+        // 비동기 caption 요청하기
+        executorService.execute(() -> {
+            requestCaption(savedPhoto);
+        });
+        // 비동기 category 요청하기
+        executorService.execute(() -> {
+            requestCategories(savedPhoto);
+        });
+        // 메타데이터 추출 하기
+        ExtractMetadata(savedPhoto,photoUploadRequest);
+
+        // 빈 다이어리 생성
+        Diary diary = Diary.builder().photo(savedPhoto).content("captioning 진행중 입니다.").build();
+        diaryRepository.save(diary);
+
+        return new PhotoUploadResponse(savedPhoto.getId(),thumbnailSignedUrl);
+    }
+
+    @Transactional
+    public void ExtractMetadata(Photo photo, PhotoUploadRequest photoUploadRequest){
+
         Optional<Metadata> metadata = metadataExtractor.readMetadata(photoUploadRequest.getImage());
 
         boolean exists_gps_info = false;
 
-        Location location = null;
         Optional<Point> point = null;
 
         KakaoCoord2regionResponse info = null;
+        Optional<LocalDateTime> snappedDate = null;
+
         if(metadata.isPresent()){
             point = metadataExtractor.getLocationPoint(metadata.get());
             if(point.isPresent()){ // GPS 정보 있으면 추출
@@ -118,7 +138,7 @@ public class PhotoService {
                     exists_gps_info = true;
                 }
             }
-            Optional<LocalDateTime> snappedDate = metadataExtractor.getSnappedDate(metadata.get());
+            snappedDate = metadataExtractor.getSnappedDate(metadata.get());
             if(snappedDate.isPresent()){ // 날짜 정보가 있으면 추출
                 photo.createSnappedAt(snappedDate.get());
             }
@@ -127,11 +147,8 @@ public class PhotoService {
             }
         }
 
-        // 저장하기
-        Photo savedPhoto = photoRepository.save(photo);
-
         if(exists_gps_info){//위치 정보가 있으면 저장
-            location = Location.builder()
+            Location location = Location.builder()
                     .full_address(info.getAddress_name())
                     .address_1depth(info.getRegion_1depth_name())
                     .address_2depth(info.getRegion_2depth_name())
@@ -139,44 +156,21 @@ public class PhotoService {
                     .address_4depth(info.getRegion_4depth_name())
                     .latitude(point.get().getX())
                     .longitude(point.get().getY())
-                    .photoId(savedPhoto.getId())
+                    .photoId(photo.getId())
                     .build();
             Location saved = locationRepository.save(location);
             photo.createLocation(saved);
         }
-
-        // caption 내용 일기장에 저장하기
-        Diary diary = Diary.builder().photo(savedPhoto).content(caption).build();
-        diaryRepository.save(diary);
-
-        // categories 요청하기
-        requestCategories(savedPhoto);
-
-        return new PhotoUploadResponse(savedPhoto.getId(),thumbnailSignedUrl);
     }
-    // 새로운 카테고리 만들기
-    @Transactional
-    public Category createCategory(String name){
-        Category category = Category.builder().name(name).build();
-        return categoryRepository.save(category);
-    }
-    @Transactional
+
     public void requestCategories(Photo photo){
 
-        CategoryInferenceResponse categoryInferenceResponse = photoInferenceWithAI.getClassificationsByPhoto(photo.getSignedUrl()).orElseThrow(() -> new RuntimeException("classification 과정에서 오류 발생"));
+        photoInferenceWithAI.getClassificationsByPhoto(photo.getId(),photo.getSignedUrl());
 
-        List<String> result = categoryInferenceResponse.getCategories();
-        for(String categoryName : result){
-            Category category = categoryRepository.findByName(categoryName).orElseGet(() -> createCategory(categoryName));
-            PhotoCategory photoCategory = PhotoCategory.builder().photo(photo).category(category).build();
-            photoCategoryRepository.save(photoCategory);
-        }
     }
-    // 캡셔닝 내용을 AI inference 서버에서 받아오는 함수
-    public String requestCaption(String signedUrl) {
-        CaptionInferenceResponse caption = photoInferenceWithAI.getCaptionByPhoto(signedUrl).orElseThrow(() -> new RuntimeException("captioning 과정에서 오류 발생"));
-        String result = caption.getCaption();
-        return translators.deeplTranslate(result);
+    // 캡셔닝 내용 요청
+    public void requestCaption(Photo photo) {
+        photoInferenceWithAI.getCaptionByPhoto(photo.getId(),photo.getSignedUrl());
     }
 
     // Optional 사용방법 https://www.daleseo.com/java8-optional-effective/
@@ -253,4 +247,5 @@ public class PhotoService {
         }
         return new PageResponse(new PageImpl<>(photosInformationResponseList,photoList.getPageable(),photoList.getTotalElements()));
     }
+
 }

@@ -20,12 +20,13 @@ public class PhotoInferenceWithAI {
 
     @Value("${ai-url}")
     private String inferenceUrl;
-    public Optional<CategoryInferenceResponse> getClassificationsByPhoto(String signedUrl) {
+    public void getClassificationsByPhoto(Long photoId, String signedUrl) {
 
-        String requestUrl = inferenceUrl+"classification";
+        String requestUrl = inferenceUrl+"/classification";
 
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("pic_path", signedUrl);
+        parameters.put("photo_id", String.valueOf(photoId));
+        parameters.put("url", signedUrl);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("accept", "text/plain;charset=UTF-8");
@@ -33,24 +34,19 @@ public class PhotoInferenceWithAI {
 
         try{
             RestTemplate rt = new RestTemplate();
-            String response = rt.postForObject(requestUrl, request, String.class);
-            ObjectMapper mapper = new ObjectMapper();
-
-            return Optional.of(mapper.readValue(response, CategoryInferenceResponse.class));
+            rt.postForObject(requestUrl, request, String.class);
         }
         catch (HttpServerErrorException e){
-            return Optional.empty();
-        }
-        catch (JsonProcessingException e) {
-            return Optional.empty();
+            throw new RuntimeException("Classification 과정에서 오류 발생");
         }
     }
 
-    public Optional<CaptionInferenceResponse> getCaptionByPhoto(String signedUrl){
+    public void getCaptionByPhoto(Long photoId, String signedUrl){
 
-        String requestUrl = inferenceUrl + "captioning";;
+        String requestUrl = inferenceUrl + "/captioning";;
 
         Map<String, String> parameters = new HashMap<>();
+        parameters.put("photo_id", String.valueOf(photoId));
         parameters.put("url", signedUrl);
 
         HttpHeaders headers = new HttpHeaders();
@@ -60,18 +56,10 @@ public class PhotoInferenceWithAI {
 
         try {
             RestTemplate rt = new RestTemplate();
-
-            String response = rt.postForObject(requestUrl, request, String.class);
-
-            ObjectMapper mapper = new ObjectMapper();
-
-            return Optional.of(mapper.readValue(response, CaptionInferenceResponse.class));
+            rt.postForObject(requestUrl, request, String.class);
         }
         catch (HttpServerErrorException e){
-            return Optional.empty();
-        }
-        catch (JsonProcessingException e) {
-            return Optional.empty();
+            new RuntimeException("captioning 과정에서 오류 발생");
         }
     }
 
