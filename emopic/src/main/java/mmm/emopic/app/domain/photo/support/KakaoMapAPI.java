@@ -28,7 +28,7 @@ public class KakaoMapAPI {
 
     public Optional<KakaoCoord2regionResponse> getLocationInfo(double latitude, double longitude){
          String requestUrl = String.format("%s.json?x=%s&y=%s",rootUrl,longitude,latitude);
-        System.out.println(requestUrl);
+        //System.out.println(requestUrl);
 
         StringBuffer response = new StringBuffer();
 
@@ -40,7 +40,7 @@ public class KakaoMapAPI {
             //인증키 - KakaoAK하고 한 칸 띄워주셔야해요!
             String auth = "KakaoAK " + apiKey;
 
-            System.out.println(auth);
+            //System.out.println(auth);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 

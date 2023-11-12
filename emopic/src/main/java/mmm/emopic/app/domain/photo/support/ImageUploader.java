@@ -31,8 +31,7 @@ public class ImageUploader {
             BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                     .setContentType("image/jpeg").build();
             storage.create(blobInfo,image.getBytes());
-            System.out.println(
-                    "File uploaded to bucket " + bucketName + " as " + objectName);
+            //System.out.println("File uploaded to bucket " + bucketName + " as " + objectName);
             return objectName;
         }
         catch (IOException e){
